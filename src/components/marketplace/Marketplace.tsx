@@ -12,14 +12,16 @@ import { MyPurchasesView } from './MyPurchasesView'
 import { ProfileView } from './ProfileView'
 import { SupportView } from './SupportView'
 import { PRODUCTS, CATEGORIES } from '@/lib/data'
-import { useUserStore } from '@/stores/user-store'
+import { useUser } from "@stackframe/stack";
 import { Search, Bell, ShieldCheck, Users, Clock, TrendingUp } from 'lucide-react'
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 
 export function Marketplace() {
   const [isTopUpOpen, setIsTopUpOpen] = useState(false)
   const [activeCategory, setActiveCategory] = useState('all')
   const [currentView, setCurrentView] = useState('shop')
-  const user = useUserStore((state) => state.user)
+  const user = useUser()
+  const mockBalance = 12450.0 // Consistent with Sidebar
 
   const filteredProducts =
     activeCategory === 'all'
@@ -190,7 +192,7 @@ export function Marketplace() {
               </button>
 
               <div className="flex items-center gap-3 pl-2">
-                <WalletBalance balance={user?.balance || 0.0} />
+                <WalletBalance balance={mockBalance} />
                 <button
                   onClick={() => setIsTopUpOpen(true)}
                   className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 hover:-translate-y-0.5 transition-all duration-300 hover-lift-strong"

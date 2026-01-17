@@ -15,27 +15,11 @@ export function Header({ onOpenTopUp }: HeaderProps) {
         {/* Logo Area */}
         <div className="flex items-center gap-8">
           <div className="flex items-center gap-2 group cursor-pointer">
-            <div className="p-2 bg-foreground rounded-lg text-background shadow-lg shadow-foreground/20 group-hover:scale-105 transition-transform duration-300">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                width="20"
-                height="20"
-                viewBox="0 0 24 24"
-                fill="none"
-                stroke="currentColor"
-                strokeWidth="2"
-                strokeLinecap="round"
-                strokeLinejoin="round"
-              >
-                <rect width="7" height="9" x="3" y="3" rx="1" />
-                <rect width="7" height="5" x="14" y="3" rx="1" />
-                <rect width="7" height="9" x="14" y="12" rx="1" />
-                <rect width="7" height="5" x="3" y="16" rx="1" />
-              </svg>
-            </div>
-            <span className="text-xl font-bold tracking-tight text-foreground">
-              Nexus<span className="text-muted-foreground">Market</span>
-            </span>
+            <img
+              src="/logo.png"
+              alt="CashVault"
+              className="h-4 w-auto object-contain"
+            />
           </div>
 
           {/* Navigation */}

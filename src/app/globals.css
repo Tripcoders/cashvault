@@ -632,3 +632,12 @@ button, a, [role="button"] {
     transition-duration: 0.01ms !important;
   }
 }
+
+/* Clerk Branding Removal Hack */
+.cl-internal-ph7261, 
+.cl-clerk-branding,
+.cl-internal-b3fm6y,
+div[class*="cl-clerk-branding"],
+a[href*="clerk.com"] {
+  display: none !important;
+}
