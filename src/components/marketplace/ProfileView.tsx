@@ -5,7 +5,7 @@ import { useUserStore } from '@/stores/user-store'
 import { User, Mail, Calendar, Wallet, ShoppingBag, ShieldCheck, Settings, KeyRound, MapPin, CreditCard, LogOut } from 'lucide-react'
 
 export function ProfileView() {
-  const { user } = useUserStore((state) => state.user)
+  const user = useUserStore((state) => state.user)
   const logout = useUserStore((state) => state.logout)
 
   if (!user) return null

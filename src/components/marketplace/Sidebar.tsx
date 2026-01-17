@@ -4,6 +4,7 @@ import React, { useState } from 'react'
 import { CATEGORIES, getIconComponent } from '@/lib/data'
 import { useCartItemCount } from '@/stores/cart-store'
 import { useUser } from "@stackframe/stack";
+import { useUserStore } from '@/stores/user-store'
 import {
   ShoppingBag,
   ShoppingCart,
@@ -43,7 +44,7 @@ export function Sidebar({
   const [isCollapsed, setIsCollapsed] = useState(false)
   const itemCount = useCartItemCount()
   const user = useUser()
-  const mockBalance = 12450.0 // Keep mock balance for now or integrate with a real backend later
+  const { user: dbUser } = useUserStore()
 
   return (
     <aside className={`${isCollapsed ? 'w-20' : 'w-64'} bg-background border-r border-border flex flex-col h-screen sticky top-0 transition-all duration-300 ease-in-out animate-slide-in-left z-50`}>
@@ -61,7 +62,7 @@ export function Sidebar({
             <img
               src="/logo.png"
               alt="CashVault"
-              className="h-5 w-auto object-contain"
+              className="h-12 w-auto object-contain"
             />
           </div>
         )}
@@ -74,7 +75,7 @@ export function Sidebar({
           <button
             onClick={() => onChangeView('shop')}
             title={isCollapsed ? 'Shop' : ''}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift ${currentView === 'shop'
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift ${currentView === 'shop'
               ? 'bg-blue-600 text-white shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
@@ -86,7 +87,7 @@ export function Sidebar({
           <button
             onClick={() => onChangeView('cart')}
             title={isCollapsed ? 'Cart' : ''}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift ${currentView === 'cart'
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift ${currentView === 'cart'
               ? 'bg-blue-600 text-white shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
@@ -105,7 +106,7 @@ export function Sidebar({
           <button
             onClick={() => onChangeView('orders')}
             title={isCollapsed ? 'My Orders' : ''}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift ${currentView === 'orders'
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift ${currentView === 'orders'
               ? 'bg-blue-600 text-white shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
@@ -117,7 +118,7 @@ export function Sidebar({
           <button
             onClick={() => onChangeView('profile')}
             title={isCollapsed ? 'Profile' : ''}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift ${currentView === 'profile'
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift ${currentView === 'profile'
               ? 'bg-blue-600 text-white shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
@@ -129,7 +130,7 @@ export function Sidebar({
           <button
             onClick={() => onChangeView('topup')}
             title={isCollapsed ? 'Add Funds' : ''}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift ${currentView === 'topup'
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift ${currentView === 'topup'
               ? 'bg-blue-600 text-white shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
@@ -141,7 +142,7 @@ export function Sidebar({
           <button
             onClick={() => onChangeView('support')}
             title={isCollapsed ? 'Support' : ''}
-            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift ${currentView === 'support'
+            className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift ${currentView === 'support'
               ? 'bg-blue-600 text-white shadow-md'
               : 'text-muted-foreground hover:bg-muted hover:text-foreground'
               }`}
@@ -164,7 +165,7 @@ export function Sidebar({
             <button
               onClick={() => onSelectCategory('all')}
               title={isCollapsed ? 'All Products' : ''}
-              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift ${activeCategory === 'all'
+              className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift ${activeCategory === 'all'
                 ? 'bg-blue-600 text-white shadow-md'
                 : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                 }`}
@@ -184,7 +185,7 @@ export function Sidebar({
                     onChangeView('shop')
                   }}
                   title={isCollapsed ? category.name : ''}
-                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between px-4'} py-3 rounded-xl text-sm font-medium transition-all hover-lift group ${staggerClass} ${activeCategory === category.id
+                  className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'justify-between px-4'} py-3 rounded-full text-sm font-medium transition-all hover-lift group ${staggerClass} ${activeCategory === category.id
                     ? 'bg-blue-600 text-white shadow-md'
                     : 'text-muted-foreground hover:bg-muted hover:text-foreground'
                     }`}
@@ -219,7 +220,7 @@ export function Sidebar({
       <div className={`p-4 border-t border-border flex-shrink-0 animate-fade-in-up bg-background`}>
         <Popover>
           <PopoverTrigger asChild>
-            <button className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 p-2'} rounded-xl transition-all hover:bg-muted group`}>
+            <button className={`w-full flex items-center ${isCollapsed ? 'justify-center' : 'gap-3 p-2'} rounded-full transition-all hover:bg-muted group`}>
               <Avatar className="w-10 h-10 border border-border shadow-sm group-hover:border-blue-500/50 transition-colors">
                 <AvatarImage src={user?.profileImageUrl || `https://api.dicebear.com/7.x/avataaars/svg?seed=${user?.displayName || 'user'}`} />
                 <AvatarFallback className="bg-blue-600 text-white">{user?.displayName?.[0] || 'U'}</AvatarFallback>
@@ -230,8 +231,8 @@ export function Sidebar({
                   <div className="flex-1 text-left min-w-0">
                     <p className="text-sm font-bold text-foreground truncate">{user?.displayName || 'User'}</p>
                     <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <span className="w-2 h-2 rounded-full bg-blue-500" />
-                      Premium Tier
+                      <span className={`w-2 h-2 rounded-full ${dbUser?.tier === 'Premium' ? 'bg-yellow-500' : 'bg-blue-500'}`} />
+                      {dbUser?.tier || 'Basic'} Tier
                     </p>
                   </div>
                   <ChevronRight className="w-4 h-4 text-muted-foreground group-hover:text-foreground transition-all group-hover:translate-x-0.5" />
@@ -250,41 +251,44 @@ export function Sidebar({
                   <h3 className="font-bold text-lg leading-none mb-1">{user?.displayName}</h3>
                   <p className="text-sm text-blue-100/80 truncate mb-2">{user?.primaryEmail}</p>
                   <span className="px-2 py-0.5 bg-white/20 rounded text-[10px] font-bold uppercase tracking-wider">
-                    Premium Member
+                    {dbUser?.tier || 'Basic'} Member
                   </span>
                 </div>
               </div>
               <div className="grid grid-cols-2 gap-4">
-                <div className="bg-white/10 rounded-xl p-3">
+                <div className="bg-white/10 rounded-full p-3">
                   <p className="text-[10px] text-blue-100/60 font-bold uppercase">Balance</p>
-                  <p className="text-sm font-mono font-bold">${mockBalance.toLocaleString()}</p>
+                  <p className="text-sm font-mono font-bold">${(dbUser?.balance || 0).toLocaleString()}</p>
                 </div>
-                <div className="bg-white/10 rounded-xl p-3">
+                <div className="bg-white/10 rounded-full p-3">
                   <p className="text-[10px] text-blue-100/60 font-bold uppercase">Orders</p>
-                  <p className="text-sm font-bold">12 Total</p>
+                  <p className="text-sm font-bold">0 Total</p>
                 </div>
               </div>
             </div>
             <div className="p-2">
               <button
-                onClick={() => onChangeView('profile')}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-all"
+                onClick={() => onChangeView('settings')}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium text-foreground hover:bg-muted transition-all"
               >
                 <Settings className="w-4 h-4 text-blue-500" />
                 Account Settings
               </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-all">
+              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium text-foreground hover:bg-muted transition-all">
                 <CreditCard className="w-4 h-4 text-blue-500" />
                 Billing Details
               </button>
-              <button className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-foreground hover:bg-muted transition-all">
+              <button
+                onClick={() => onChangeView('security')}
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium text-foreground hover:bg-muted transition-all"
+              >
                 <Shield className="w-4 h-4 text-blue-500" />
                 Security
               </button>
               <div className="h-px bg-border my-2 mx-2" />
               <button
                 onClick={() => user?.signOut()}
-                className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
+                className="w-full flex items-center gap-3 px-4 py-3 rounded-full text-sm font-medium text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-all"
               >
                 <LogOut className="w-4 h-4" />
                 Logout

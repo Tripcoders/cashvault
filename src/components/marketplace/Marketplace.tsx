@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Sidebar } from './Sidebar'
 import { ProductCard } from './ProductCard'
 import { TopUpModal } from './TopUpModal'
@@ -11,22 +11,56 @@ import { CartView } from './CartView'
 import { MyPurchasesView } from './MyPurchasesView'
 import { ProfileView } from './ProfileView'
 import { SupportView } from './SupportView'
-import { PRODUCTS, CATEGORIES } from '@/lib/data'
+import { PRODUCTS as INITIAL_PRODUCTS, CATEGORIES, Product } from '@/lib/data'
 import { useUser } from "@stackframe/stack";
 import { Search, Bell, ShieldCheck, Users, Clock, TrendingUp } from 'lucide-react'
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { ProductDetailModal } from './ProductDetailModal'
+import { SettingsView } from './SettingsView'
+import { SecurityView } from './SecurityView'
+import { useUserStore } from '@/stores/user-store'
 
 export function Marketplace() {
   const [isTopUpOpen, setIsTopUpOpen] = useState(false)
+  const [selectedProduct, setSelectedProduct] = useState<any>(null)
   const [activeCategory, setActiveCategory] = useState('all')
   const [currentView, setCurrentView] = useState('shop')
-  const user = useUser()
-  const mockBalance = 12450.0 // Consistent with Sidebar
+  const [searchQuery, setSearchQuery] = useState('')
+  const [products, setProducts] = useState<Product[]>([])
+  const stackUser = useUser()
 
-  const filteredProducts =
-    activeCategory === 'all'
-      ? PRODUCTS
-      : PRODUCTS.filter((p) => p.category === activeCategory)
+  const { user, syncUser } = useUserStore()
+
+  useEffect(() => {
+    // Sync user with DB
+    if (stackUser) {
+      syncUser()
+    }
+  }, [stackUser])
+
+  useEffect(() => {
+    async function fetchProducts() {
+      try {
+        const res = await fetch('/api/products')
+        if (res.ok) {
+          const data = await res.json()
+          // Default to initial products if DB is empty or fails, but DB should have data now
+          setProducts(data.length > 0 ? data : INITIAL_PRODUCTS)
+        }
+      } catch (e) {
+        setProducts(INITIAL_PRODUCTS)
+      }
+    }
+    fetchProducts()
+  }, [])
+
+  const filteredProducts = products.filter((p) => {
+    const matchesCategory = activeCategory === 'all' || p.category === activeCategory
+    const matchesSearch = p.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.description.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      p.category.toLowerCase().includes(searchQuery.toLowerCase())
+    return matchesCategory && matchesSearch
+  })
 
   const handleViewChange = (view: string) => {
     if (view === 'topup') {
@@ -46,6 +80,10 @@ export function Marketplace() {
         return <ProfileView />
       case 'support':
         return <SupportView />
+      case 'settings':
+        return <SettingsView />
+      case 'security':
+        return <SecurityView />
       default:
         return (
           <>
@@ -70,7 +108,7 @@ export function Marketplace() {
                   </p>
                   <div className="flex items-center gap-8 pt-2 animate-fade-in-up stagger-3">
                     <div className="flex items-center gap-3 text-sm text-white/80 font-medium hover-lift">
-                      <div className="p-2 bg-white/10 rounded-lg">
+                      <div className="p-2 bg-white/10 rounded-full">
                         <Users className="w-5 h-5 text-blue-200" />
                       </div>
                       <div>
@@ -79,7 +117,7 @@ export function Marketplace() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-white/80 font-medium hover-lift">
-                      <div className="p-2 bg-white/10 rounded-lg">
+                      <div className="p-2 bg-white/10 rounded-full">
                         <Clock className="w-5 h-5 text-blue-200" />
                       </div>
                       <div>
@@ -88,7 +126,7 @@ export function Marketplace() {
                       </div>
                     </div>
                     <div className="flex items-center gap-3 text-sm text-white/80 font-medium hover-lift">
-                      <div className="p-2 bg-white/10 rounded-lg">
+                      <div className="p-2 bg-white/10 rounded-full">
                         <TrendingUp className="w-5 h-5 text-blue-200" />
                       </div>
                       <div>
@@ -144,7 +182,12 @@ export function Marketplace() {
             {/* Product Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {filteredProducts.map((product, idx) => (
-                <ProductCard key={product.id} product={product} index={idx} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  index={idx}
+                  onClick={() => setSelectedProduct(product)} // Added onClick
+                />
               ))}
             </div>
           </>
@@ -175,7 +218,9 @@ export function Marketplace() {
                 <input
                   type="text"
                   placeholder="Search products, logs, leads..."
-                  className="w-full pl-10 pr-4 py-2.5 bg-muted border border-transparent hover:border-blue-500 focus:border-blue-500 focus:bg-background rounded-xl text-sm transition-all outline-none text-foreground placeholder:text-muted-foreground hover:shadow-lg focus:shadow-xl"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2.5 bg-muted border border-transparent hover:border-blue-500 focus:border-blue-500 focus:bg-background rounded-full text-sm transition-all outline-none text-foreground placeholder:text-muted-foreground hover:shadow-lg focus:shadow-xl"
                 />
               </div>
             </div>
@@ -192,10 +237,10 @@ export function Marketplace() {
               </button>
 
               <div className="flex items-center gap-3 pl-2">
-                <WalletBalance balance={mockBalance} />
+                <WalletBalance balance={user?.balance || 0} />
                 <button
                   onClick={() => setIsTopUpOpen(true)}
-                  className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 hover:-translate-y-0.5 transition-all duration-300 hover-lift-strong"
+                  className="px-5 py-2.5 bg-blue-600 text-white text-sm font-bold rounded-full hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 hover:-translate-y-0.5 transition-all duration-300 hover-lift-strong"
                 >
                   Top Up
                 </button>
@@ -208,6 +253,11 @@ export function Marketplace() {
       </div>
 
       <TopUpModal isOpen={isTopUpOpen} onClose={() => setIsTopUpOpen(false)} />
+      <ProductDetailModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
+      />
       <RecentSales />
     </div>
   )

@@ -4,20 +4,24 @@ import React from 'react'
 import { ArrowUpRight, ShieldCheck, Star, ShoppingCart } from 'lucide-react'
 import { Product } from '@/lib/data'
 import { useCartStore } from '@/stores/cart-store'
+import { useToast } from '@/hooks/use-toast'
 
 interface ProductCardProps {
   product: Product
   index?: number
+  onClick?: () => void
 }
 
-export function ProductCard({ product, index = 0 }: ProductCardProps) {
+export function ProductCard({ product, index = 0, onClick }: ProductCardProps) {
   const addItem = useCartStore((state) => state.addItem)
-  
+  const { toast } = useToast()
+
   const staggerClass = `stagger-${Math.min(index + 1, 10)}`
 
   return (
-    <div 
-      className={`group relative bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-500/30 hover-lift flex flex-col h-full animate-face-in-up ${staggerClass}`}
+    <div
+      onClick={onClick}
+      className={`group relative bg-card border border-border rounded-xl overflow-hidden hover:shadow-xl hover:shadow-blue-500/10 hover:border-blue-500/30 hover-lift flex flex-col h-full animate-face-in-up cursor-pointer ${staggerClass}`}
     >
       {/* Image Container */}
       <div className="aspect-[16/9] overflow-hidden bg-muted relative">
@@ -91,7 +95,14 @@ export function ProductCard({ product, index = 0 }: ProductCardProps) {
             </span>
           </div>
           <button
-            onClick={() => addItem(product)}
+            onClick={(e) => {
+              e.stopPropagation()
+              addItem(product)
+              toast({
+                title: "Added to Cart",
+                description: `${product.title} has been added to your cart.`,
+              })
+            }}
             className="px-5 py-2.5 bg-foreground text-background dark:bg-blue-600 dark:text-white text-sm font-bold rounded-lg hover:bg-blue-600 dark:hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl hover:-translate-y-0.5 flex items-center gap-2 hover-scale"
           >
             <ShoppingCart className="w-4 h-4" />

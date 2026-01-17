@@ -5,7 +5,9 @@ import { Trash2, ShoppingCart, ArrowRight, ShieldCheck, CreditCard, Package } fr
 import { useCartStore } from '@/stores/cart-store'
 
 export function CartView() {
-  const { items, removeItem, clearCart, total, itemCount } = useCartStore()
+  const { items, removeItem, clearCart } = useCartStore()
+  const total = useCartStore((state) => state.items.reduce((sum, item) => sum + item.price * item.quantity, 0))
+  const itemCount = useCartStore((state) => state.items.reduce((sum, item) => sum + item.quantity, 0))
 
   if (items.length === 0) {
     return (
@@ -20,7 +22,7 @@ export function CartView() {
           Looks like you haven't added any items yet. Browse our marketplace to
           find premium digital assets.
         </p>
-        <button 
+        <button
           onClick={() => (window as any).router?.push?.('/')}
           className="px-6 py-3 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 hover:-translate-y-0.5 transition-all duration-300 hover-lift animate-fade-in-up stagger-3"
         >

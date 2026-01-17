@@ -1,8 +1,6 @@
-import { stackServerApp } from "@/stack";
 import { NextRequest, NextResponse } from "next/server";
 
 export default async function middleware(request: NextRequest) {
-    // Stack Auth handles its own middleware routing internally or via specific handlers
     return NextResponse.next();
 }
 

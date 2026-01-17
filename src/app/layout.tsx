@@ -32,13 +32,24 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const stackTheme = {
+    colors: {
+      primary: '#2563eb', // Blue-600 matched
+    },
+    components: {
+      button: {
+        borderRadius: '9999px', // Pill buttons
+      },
+    },
+  };
+
   return (
     <html lang="en" suppressHydrationWarning>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
       >
         <StackProvider app={stackServerApp}>
-          <StackTheme>
+          <StackTheme theme={stackTheme}>
             {children}
             <Toaster />
           </StackTheme>
