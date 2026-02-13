@@ -5,8 +5,6 @@ import Image from 'next/image'
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
 } from "@/components/ui/dialog"
 import { Product, PRODUCTS } from '@/lib/data'
 import { useCartStore } from '@/stores/cart-store'
@@ -14,7 +12,6 @@ import { Badge } from "@/components/ui/badge"
 import { 
     ShieldCheck, 
     ShoppingCart, 
-    Star, 
     Clock, 
     Trophy, 
     CheckCircle2, 
@@ -24,7 +21,8 @@ import {
     Wallet,
     Building2,
     CreditCard,
-    Package
+    Package,
+    ArrowUpDown
 } from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
 import { 
@@ -41,18 +39,46 @@ interface ProductVariantModalProps {
     onClose: () => void
 }
 
+type SortOption = 'price-high-low' | 'price-low-high' | 'balance-high-low' | 'balance-low-high'
+
 export function ProductVariantModal({ product, isOpen, onClose }: ProductVariantModalProps) {
     const addItem = useCartStore((state) => state.addItem)
     const { toast } = useToast()
     const [imageError, setImageError] = useState(false)
     const [showContactSupport, setShowContactSupport] = useState(false)
     const [showVariantSelector, setShowVariantSelector] = useState(false)
+    const [sortOption, setSortOption] = useState<SortOption>('price-high-low')
     
     // Get all variants for this product
     const variants = useMemo(() => {
         if (!product) return []
-        return getProductVariants(product, PRODUCTS)
-    }, [product])
+        let vars = getProductVariants(product, PRODUCTS)
+        
+        // Sort variants based on selected option
+        switch (sortOption) {
+            case 'price-high-low':
+                vars = [...vars].sort((a, b) => b.price - a.price)
+                break
+            case 'price-low-high':
+                vars = [...vars].sort((a, b) => a.price - b.price)
+                break
+            case 'balance-high-low':
+                vars = [...vars].sort((a, b) => {
+                    const balanceA = parseInt(a.bankBalance?.replace(/[^0-9]/g, '') || '0')
+                    const balanceB = parseInt(b.bankBalance?.replace(/[^0-9]/g, '') || '0')
+                    return balanceB - balanceA
+                })
+                break
+            case 'balance-low-high':
+                vars = [...vars].sort((a, b) => {
+                    const balanceA = parseInt(a.bankBalance?.replace(/[^0-9]/g, '') || '0')
+                    const balanceB = parseInt(b.bankBalance?.replace(/[^0-9]/g, '') || '0')
+                    return balanceA - balanceB
+                })
+                break
+        }
+        return vars
+    }, [product, sortOption])
     
     // Selected variant (defaults to the clicked product)
     const [selectedVariant, setSelectedVariant] = useState<Product | null>(product)
@@ -102,27 +128,19 @@ export function ProductVariantModal({ product, isOpen, onClose }: ProductVariant
             <DialogContent className="max-w-lg p-0 overflow-hidden bg-card border-border rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
                 {/* Single Column Layout */}
                 <div className="flex flex-col">
-                    {/* Header Image with Logo Fallback */}
-                    <div className="relative w-full h-48 bg-gradient-to-br from-blue-600/10 to-blue-900/10">
-                        {!imageError && selectedVariant.image ? (
-                            <img
-                                src={selectedVariant.image}
-                                alt={selectedVariant.title}
-                                className="w-full h-full object-cover"
-                                onError={() => setImageError(true)}
+                    {/* Header Image with Logo Fallback - NO TEXT, ONLY LOGO */}
+                    <div className="relative w-full h-48 bg-gradient-to-br from-blue-600/10 to-blue-900/10 flex items-center justify-center">
+                        {/* Logo Only - No CashVault Text */}
+                        <div className="relative w-32 h-32">
+                            <Image
+                                src="/logo.png"
+                                alt="CashVault"
+                                fill
+                                className="object-contain opacity-80"
                             />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center">
-                                <div className="relative w-32 h-32">
-                                    <Image
-                                        src="/logo.png"
-                                        alt="CashVault"
-                                        fill
-                                        className="object-contain opacity-60"
-                                    />
-                                </div>
-                            </div>
-                        )}
+                        </div>
+                        
+                        {/* Gradient Overlay */}
                         <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                         
                         {/* Badges */}
@@ -137,33 +155,34 @@ export function ProductVariantModal({ product, isOpen, onClose }: ProductVariant
                             )}
                         </div>
 
-                        {/* Close Button */}
+                        {/* Close Button - ONLY ONE */}
                         <button
                             onClick={onClose}
-                            className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors"
+                            className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors z-10"
                         >
                             <X className="w-5 h-5" />
                         </button>
 
-                        {/* Title Overlay */}
+                        {/* Verified Badge at Bottom */}
                         <div className="absolute bottom-4 left-4 right-4">
-                            <div className="flex items-center gap-2 mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest">
+                            <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-widest">
                                 <ShieldCheck className="w-4 h-4" />
                                 Verified Asset
                             </div>
-                            <DialogTitle className="text-xl font-bold text-white tracking-tight">
-                                {familyName}
-                            </DialogTitle>
                         </div>
                     </div>
 
                     {/* Content */}
                     <div className="p-6 space-y-6">
-                        <DialogHeader className="m-0">
-                            <p className="text-muted-foreground text-sm leading-relaxed">
+                        {/* Title */}
+                        <div>
+                            <h2 className="text-xl font-bold text-foreground tracking-tight">
+                                {familyName}
+                            </h2>
+                            <p className="text-muted-foreground text-sm leading-relaxed mt-2">
                                 {selectedVariant.description}
                             </p>
-                        </DialogHeader>
+                        </div>
 
                         {/* Variant Selector - Only show if multiple variants exist */}
                         {hasVariants && (
@@ -173,9 +192,21 @@ export function ProductVariantModal({ product, isOpen, onClose }: ProductVariant
                                         {getCategoryIcon()}
                                         Select {product.category === 'bank-logs' ? 'Balance' : 'Option'}
                                     </h4>
-                                    <span className="text-xs text-muted-foreground">
-                                        {variants.length} available
-                                    </span>
+                                    
+                                    {/* Sort Dropdown */}
+                                    <div className="relative">
+                                        <select
+                                            value={sortOption}
+                                            onChange={(e) => setSortOption(e.target.value as SortOption)}
+                                            className="appearance-none bg-muted border border-border rounded-lg px-3 py-1.5 pr-8 text-xs font-medium text-foreground focus:outline-none focus:border-primary cursor-pointer"
+                                        >
+                                            <option value="price-high-low">Price: High → Low</option>
+                                            <option value="price-low-high">Price: Low → High</option>
+                                            <option value="balance-high-low">Balance: High → Low</option>
+                                            <option value="balance-low-high">Balance: Low → High</option>
+                                        </select>
+                                        <ArrowUpDown className="absolute right-2 top-1/2 -translate-y-1/2 w-3 h-3 text-muted-foreground pointer-events-none" />
+                                    </div>
                                 </div>
 
                                 {/* Selected Variant Display */}
@@ -203,7 +234,7 @@ export function ProductVariantModal({ product, isOpen, onClose }: ProductVariant
 
                                 {/* Variant Options Dropdown */}
                                 {showVariantSelector && (
-                                    <div className="border border-border rounded-xl overflow-hidden divide-y divide-border animate-fade-in-up">
+                                    <div className="border border-border rounded-xl overflow-hidden divide-y divide-border animate-fade-in-up max-h-64 overflow-y-auto">
                                         {variants.map((variant) => (
                                             <button
                                                 key={variant.id}
@@ -275,10 +306,6 @@ export function ProductVariantModal({ product, isOpen, onClose }: ProductVariant
                                     <p className="text-3xl font-mono font-bold text-foreground">
                                         ${selectedVariant.price.toLocaleString()}
                                     </p>
-                                </div>
-                                <div className="flex items-center gap-1 px-3 py-1 bg-amber-500/10 rounded-lg">
-                                    <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                                    <span className="text-sm font-bold">4.9</span>
                                 </div>
                             </div>
 

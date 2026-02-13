@@ -144,10 +144,10 @@ export function AddFundsModal({ isOpen, onClose }: AddFundsModalProps) {
       return
     }
     
-    if (parseFloat(amount) < 50) {
+    if (parseFloat(amount) < 150) {
       toast({
         title: 'Minimum Deposit',
-        description: 'Minimum deposit amount is $50',
+        description: 'Minimum deposit amount is $150',
         variant: 'destructive',
       })
       return
@@ -200,13 +200,13 @@ export function AddFundsModal({ isOpen, onClose }: AddFundsModalProps) {
                   type="number"
                   value={amount}
                   onChange={(e) => setAmount(e.target.value)}
-                  placeholder="Enter amount (min $50)"
+                  placeholder="Enter amount (min $150)"
                   min="50"
                   className="w-full pl-8 pr-4 py-3 bg-muted border border-border rounded-lg text-foreground placeholder:text-muted-foreground focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
                 />
               </div>
               <p className="text-xs text-muted-foreground">
-                Minimum deposit: $50. Funds will be credited after network confirmation.
+                Minimum deposit: $150. Funds will be credited after network confirmation.
               </p>
             </div>
 
@@ -257,7 +257,7 @@ export function AddFundsModal({ isOpen, onClose }: AddFundsModalProps) {
             {/* Action Button */}
             <Button
               onClick={handleGenerateAddress}
-              disabled={!selectedCrypto || !amount || parseFloat(amount) < 50}
+              disabled={!selectedCrypto || !amount || parseFloat(amount) < 150}
               className="w-full"
             >
               Generate Payment Address

@@ -49,7 +49,7 @@ export function Sidebar({
     >
       {/* Logo & Toggle */}
       <div className={`h-16 flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'} border-b border-border flex-shrink-0 transition-all duration-500`}>
-        {/* Logo - Small when expanded, icon when collapsed */}
+        {/* Logo - Image + Text when expanded, "C" when collapsed */}
         {!isCollapsed ? (
           <div className="flex items-center gap-2 transition-all duration-500 animate-in fade-in slide-in-from-left-2">
             <div className="relative w-8 h-8">
@@ -61,17 +61,10 @@ export function Sidebar({
                 priority
               />
             </div>
-            <span className="font-bold text-lg text-foreground">CashVault</span>
           </div>
         ) : (
-          <div className="relative w-10 h-10 transition-all duration-500 hover:scale-105">
-            <Image
-              src="/logo.png"
-              alt="CashVault"
-              fill
-              className="object-contain"
-              priority
-            />
+          <div className="w-10 h-10 bg-primary rounded-xl flex items-center justify-center text-white font-bold text-xl transition-all duration-500 hover:scale-105 hover:shadow-lg hover:shadow-primary/25">
+            C
           </div>
         )}
 

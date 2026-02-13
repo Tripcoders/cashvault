@@ -136,7 +136,7 @@ export function TopUpModal({ isOpen, onClose }: TopUpModalProps) {
               </div>
 
               <div className="grid grid-cols-3 gap-3">
-                {['100', '500', '700', '1000'].map((val, idx) => (
+                {['150', '500', '1000', '2500'].map((val, idx) => (
                   <button
                     key={val}
                     onClick={() => setAmount(val)}
@@ -274,8 +274,8 @@ export function TopUpModal({ isOpen, onClose }: TopUpModalProps) {
 
           <button
             onClick={step === 3 ? onClose : nextStep}
-            disabled={step === 1 && !amount}
-            className={`flex items-center gap-2 px-8 py-3 rounded-full text-sm font-bold transition-all shadow-lg ${step === 1 && !amount
+            disabled={step === 1 && (!amount || parseFloat(amount) < 150)}
+            className={`flex items-center gap-2 px-8 py-3 rounded-full text-sm font-bold transition-all shadow-lg ${step === 1 && (!amount || parseFloat(amount) < 150)
               ? 'bg-muted text-muted-foreground cursor-not-allowed shadow-none'
               : 'bg-blue-600 text-white hover:bg-blue-700 hover:shadow-blue-600/20 hover:-translate-y-0.5 hover-lift'
               }`}

@@ -13,7 +13,8 @@ import { CartView } from './CartView'
 import { MyPurchasesView } from './MyPurchasesView'
 import { ProfileView } from './ProfileView'
 import { SupportView } from './SupportView'
-import { PagePreloader } from './PagePreloader'
+import { VaultPreloader } from './VaultPreloader'
+import { WelcomeModal } from './WelcomeModal'
 import { PRODUCTS as INITIAL_PRODUCTS, CATEGORIES, Product, BANNER_IMAGE } from '@/lib/data'
 import { useUser } from "@stackframe/stack";
 import { Search, ShieldCheck, Users, Clock, TrendingUp, ChevronRight, Wallet } from 'lucide-react'
@@ -95,6 +96,7 @@ export function Marketplace() {
   const [currentView, setCurrentView] = useState('shop')
   const [searchQuery, setSearchQuery] = useState('')
   const [products, setProducts] = useState<Product[]>([])
+  const [showWelcomeModal, setShowWelcomeModal] = useState(false)
   const stackUser = useUser()
 
   const { user, syncUser } = useUserStore()
@@ -108,6 +110,24 @@ export function Marketplace() {
   useEffect(() => {
     setProducts(INITIAL_PRODUCTS)
   }, [])
+
+  // Show welcome modal for new users (within first 24 hours, no deposit made)
+  useEffect(() => {
+    if (user?.accountCreatedAt && !user?.hasMadeDeposit) {
+      const created = new Date(user.accountCreatedAt).getTime()
+      const now = new Date().getTime()
+      const hoursSinceCreation = (now - created) / (1000 * 60 * 60)
+      
+      // Show if account is less than 24 hours old and no deposit
+      if (hoursSinceCreation < 24) {
+        const hasSeenWelcome = sessionStorage.getItem('cashvault_welcome_seen')
+        if (!hasSeenWelcome) {
+          setShowWelcomeModal(true)
+          sessionStorage.setItem('cashvault_welcome_seen', 'true')
+        }
+      }
+    }
+  }, [user])
 
   const filteredProducts = products.filter((p) => {
     const matchesCategory = activeCategory === 'all' || p.category === activeCategory
@@ -341,8 +361,13 @@ export function Marketplace() {
   }
 
   return (
-    <PagePreloader>
+    <VaultPreloader>
       <div className="min-h-screen bg-background flex">
+        {/* Welcome Modal for New Users */}
+        <WelcomeModal 
+          isOpen={showWelcomeModal} 
+          onClose={() => setShowWelcomeModal(false)} 
+        />
         {/* Desktop Sidebar */}
         <div className="hidden lg:block">
           <Sidebar
@@ -398,7 +423,7 @@ export function Marketplace() {
         />
         <RecentSales />
       </div>
-    </PagePreloader>
+    </VaultPreloader>
   )
 }
 
