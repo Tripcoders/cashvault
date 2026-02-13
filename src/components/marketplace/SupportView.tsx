@@ -11,7 +11,7 @@ export function SupportView() {
         <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-blue-600/30 animate-bounce-subtle">
           <MessageCircle className="w-10 h-10 text-white" />
         </div>
-        <h1 className="text-4xl font-bold text-foreground mb-4 animate-fade-in-up stagger-1">
+        <h1 className="text-[32px] font-bold text-foreground mb-4 animate-fade-in-up stagger-1">
           Support Center
         </h1>
         <p className="text-xl text-muted-foreground max-w-2xl mx-auto animate-fade-in-up stagger-2">

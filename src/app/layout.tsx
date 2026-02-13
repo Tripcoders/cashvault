@@ -1,28 +1,22 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Toaster } from "@/components/ui/toaster";
 import { StackProvider, StackTheme } from "@stackframe/stack";
 import { stackServerApp } from "@/stack";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
-  title: "CashVault - Premium Digital Assets Marketplace",
-  description: "Secure marketplace for premium digital assets. Anonymous, secure, and instant delivery with 24/7 support.",
-  keywords: ["Marketplace", "Digital Assets", "Crypto", "Premium", "Secure"],
+  title: "CashVault - Elite Financial Market",
+  description: "Premium cash out tools, bank logs, RATs, and financial instruments. Professional-grade resources for serious operators.",
+  keywords: ["Marketplace", "Financial Tools", "Cash Out", "Bank Logs", "RATs", "Secure"],
   authors: [{ name: "CashVault" }],
+  icons: {
+    icon: '/favicon.ico',
+    shortcut: '/favicon.ico',
+    apple: '/apple-touch-icon.png',
+  },
   openGraph: {
-    title: "CashVault - Premium Digital Assets",
-    description: "Secure marketplace for premium digital assets",
+    title: "CashVault - Elite Financial Market",
+    description: "Premium cash out tools and financial instruments",
     type: "website",
   },
 };
@@ -34,20 +28,22 @@ export default function RootLayout({
 }>) {
   const stackTheme = {
     colors: {
-      primary: '#2563eb', // Blue-600 matched
+      primary: '#2563eb',
     },
     components: {
       button: {
-        borderRadius: '9999px', // Pill buttons
+        borderRadius: '9999px',
       },
     },
   };
 
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased bg-background text-foreground`}
-      >
+      <head>
+        <link rel="preconnect" href="https://fonts.cdnfonts.com" />
+        <link href="https://fonts.cdnfonts.com/css/codec-pro" rel="stylesheet" />
+      </head>
+      <body className="antialiased bg-background text-foreground font-codec">
         <StackProvider app={stackServerApp}>
           <StackTheme theme={stackTheme}>
             {children}

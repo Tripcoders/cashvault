@@ -59,7 +59,7 @@ export function AuthPage() {
             </div>
           </div>
 
-          <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl text-center">
+          <h2 className="text-[20px] font-semibold tracking-tight text-white text-center">
             Account Access
           </h2>
 
