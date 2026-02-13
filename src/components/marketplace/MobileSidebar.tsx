@@ -2,7 +2,7 @@
 
 import React from 'react'
 import Image from 'next/image'
-import { X, ShoppingBag, ShoppingCart, ClipboardList, Plus, MessageCircle, User, LogOut, LayoutDashboard, Settings, CreditCard, Shield, Home, Package } from 'lucide-react'
+import { X, ShoppingBag, ShoppingCart, ClipboardList, Plus, MessageCircle, User, LogOut, LayoutDashboard, Home, Package } from 'lucide-react'
 import { CATEGORIES, getIconComponent } from '@/lib/data'
 import { useUser } from "@stackframe/stack";
 import { useUserStore } from '@/stores/user-store'
@@ -81,11 +81,11 @@ export function MobileSidebar({
       />
       
       {/* Sidebar Drawer */}
-      <aside className="fixed inset-y-0 left-0 w-[300px] bg-background border-r border-border z-50 lg:hidden flex flex-col animate-slide-in-left max-h-screen overflow-hidden">
+      <aside className="fixed inset-y-0 left-0 w-[280px] bg-background border-r border-border z-50 lg:hidden flex flex-col animate-slide-in-left">
         {/* Header */}
-        <div className="h-16 flex items-center justify-between px-4 border-b border-border">
+        <div className="h-16 flex items-center justify-between px-4 border-b border-border flex-shrink-0">
           <div className="flex items-center gap-2">
-            <div className="relative h-6 w-24">
+            <div className="relative h-8 w-8">
               <Image
                 src="/logo.png"
                 alt="CashVault"
@@ -94,6 +94,7 @@ export function MobileSidebar({
                 priority
               />
             </div>
+            <span className="font-bold text-lg text-foreground">CashVault</span>
           </div>
           <button
             onClick={onClose}
@@ -105,9 +106,9 @@ export function MobileSidebar({
 
         {/* User Info */}
         {user && (
-          <div className="p-4 border-b border-border">
+          <div className="p-4 border-b border-border flex-shrink-0">
             <div className="flex items-center gap-3">
-              <div className={`w-12 h-12 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-lg border border-border`}>
+              <div className={`w-12 h-12 rounded-full ${avatarColor} flex items-center justify-center text-white font-bold text-lg border-2 border-border`}>
                 {initials}
               </div>
               <div className="flex-1 min-w-0">
@@ -128,8 +129,8 @@ export function MobileSidebar({
           </div>
         )}
 
-        {/* Navigation - Scrollable */}
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6 pb-20">
+        {/* Navigation - Scrollable with proper padding for footer */}
+        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6 pb-24">
           {/* Main Menu */}
           <div className="space-y-1">
             <p className="px-3 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
@@ -207,36 +208,11 @@ export function MobileSidebar({
               )
             })}
           </div>
-
-          {/* Settings */}
-          <div className="space-y-1">
-            <p className="px-3 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">
-              Settings
-            </p>
-            
-            <NavButton
-              icon={<Settings className="w-5 h-5" />}
-              label="Account Settings"
-              onClick={() => handleViewChange('settings')}
-            />
-            
-            <NavButton
-              icon={<CreditCard className="w-5 h-5" />}
-              label="Billing"
-              onClick={() => {}}
-            />
-            
-            <NavButton
-              icon={<Shield className="w-5 h-5" />}
-              label="Security"
-              onClick={() => handleViewChange('security')}
-            />
-          </div>
         </div>
 
-        {/* Footer - Logout */}
+        {/* Footer - Logout - Fixed at bottom */}
         {user && (
-          <div className="p-4 border-t border-border">
+          <div className="p-4 border-t border-border bg-background flex-shrink-0">
             <button
               onClick={() => user.signOut()}
               className="w-full flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
@@ -271,7 +247,7 @@ function NavButton({ icon, label, active = false, badge = 0, onClick }: NavButto
     >
       <div className="flex items-center gap-3">
         {icon}
-        <span>{label}</span>
+        <span className="whitespace-nowrap">{label}</span>
       </div>
       {badge > 0 && (
         <span className={`px-2 py-0.5 text-xs font-bold rounded-full ${

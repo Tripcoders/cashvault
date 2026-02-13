@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import { motion } from 'framer-motion'
 import { Sidebar } from './Sidebar'
 import { MobileSidebar } from './MobileSidebar'
 import { Header } from './Header'
@@ -12,6 +13,7 @@ import { CartView } from './CartView'
 import { MyPurchasesView } from './MyPurchasesView'
 import { ProfileView } from './ProfileView'
 import { SupportView } from './SupportView'
+import { PagePreloader } from './PagePreloader'
 import { PRODUCTS as INITIAL_PRODUCTS, CATEGORIES, Product, BANNER_IMAGE } from '@/lib/data'
 import { useUser } from "@stackframe/stack";
 import { Search, ShieldCheck, Users, Clock, TrendingUp, ChevronRight, Wallet } from 'lucide-react'
@@ -142,7 +144,7 @@ export function Marketplace() {
         return (
           <>
             {/* Hero Section with Banner Image */}
-            <div className="mb-6 sm:mb-10 relative rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-border">
+            <div className="mb-6 sm:mb-8 relative rounded-xl sm:rounded-2xl overflow-hidden shadow-xl border border-border">
               {/* Background Image */}
               <div 
                 className="absolute inset-0 bg-cover bg-center"
@@ -153,18 +155,18 @@ export function Marketplace() {
               <div className="absolute inset-0 bg-gradient-to-r from-slate-900/95 via-slate-800/90 to-blue-900/80" />
               
               {/* Content */}
-              <div className="relative z-10 p-4 sm:p-8">
+              <div className="relative z-10 p-4 sm:p-6 lg:p-8">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
                   <div className="space-y-4 max-w-2xl">
                     {/* Badge */}
-                    <div className="inline-flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-full bg-white/10 border border-white/20 text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-wide backdrop-blur-sm">
+                    <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-white/10 border border-white/20 text-white/90 text-[10px] sm:text-xs font-bold uppercase tracking-wide backdrop-blur-sm">
                       <ShieldCheck className="w-3 h-3 sm:w-4 sm:h-4" />
                       Verified & Escrow Secured
                     </div>
 
                     {/* Title & Description */}
                     <div>
-                      <h1 className="text-xl sm:text-3xl md:text-4xl font-bold tracking-tight text-white mb-2 sm:mb-4">
+                      <h1 className="text-xl sm:text-2xl md:text-4xl font-bold tracking-tight text-white mb-2 sm:mb-4">
                         Elite Financial Market
                       </h1>
                       <p className="text-white/70 text-sm sm:text-base md:text-lg max-w-xl">
@@ -309,7 +311,7 @@ export function Marketplace() {
             </div>
 
             {/* Product Grid - Responsive */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6 pb-24 lg:pb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 sm:gap-6">
               {filteredProducts.map((product, idx) => (
                 <ProductCard
                   key={product.id}
@@ -339,55 +341,64 @@ export function Marketplace() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex">
-      {/* Desktop Sidebar */}
-      <div className="hidden lg:block">
-        <Sidebar
+    <PagePreloader>
+      <div className="min-h-screen bg-background flex">
+        {/* Desktop Sidebar */}
+        <div className="hidden lg:block">
+          <Sidebar
+            activeCategory={activeCategory}
+            onSelectCategory={(id) => {
+              setActiveCategory(id)
+              setCurrentView('shop')
+            }}
+            currentView={currentView}
+            onChangeView={handleViewChange}
+          />
+        </div>
+
+        {/* Mobile Sidebar Drawer */}
+        <MobileSidebar
+          isOpen={isMobileMenuOpen}
+          onClose={() => setIsMobileMenuOpen(false)}
           activeCategory={activeCategory}
-          onSelectCategory={(id) => {
-            setActiveCategory(id)
-            setCurrentView('shop')
-          }}
+          onSelectCategory={setActiveCategory}
           currentView={currentView}
           onChangeView={handleViewChange}
         />
-      </div>
 
-      {/* Mobile Sidebar Drawer */}
-      <MobileSidebar
-        isOpen={isMobileMenuOpen}
-        onClose={() => setIsMobileMenuOpen(false)}
-        activeCategory={activeCategory}
-        onSelectCategory={setActiveCategory}
-        currentView={currentView}
-        onChangeView={handleViewChange}
-      />
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col min-w-0 min-h-screen">
+          <Header
+            onOpenTopUp={() => setIsAddFundsOpen(true)}
+            onNavigateToProfile={() => setCurrentView('profile')}
+            onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+            isMobileMenuOpen={isMobileMenuOpen}
+            currentView={currentView}
+            onChangeView={setCurrentView}
+          />
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col min-w-0 min-h-screen">
-        <Header
-          onOpenTopUp={() => setIsAddFundsOpen(true)}
-          onNavigateToProfile={() => setCurrentView('profile')}
-          onToggleMobileMenu={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-          isMobileMenuOpen={isMobileMenuOpen}
-          currentView={currentView}
-          onChangeView={setCurrentView}
+          {/* Main content with proper padding for mobile bottom nav */}
+          <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden pb-24 lg:pb-8">
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.3 }}
+            >
+              {renderContent()}
+            </motion.div>
+          </main>
+        </div>
+
+        <TopUpModal isOpen={isTopUpOpen} onClose={() => setIsTopUpOpen(false)} />
+        <AddFundsModal isOpen={isAddFundsOpen} onClose={() => setIsAddFundsOpen(false)} />
+        <ProductVariantModal
+          product={selectedProduct}
+          isOpen={!!selectedProduct}
+          onClose={() => setSelectedProduct(null)}
         />
-
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-x-hidden">
-          {renderContent()}
-        </main>
+        <RecentSales />
       </div>
-
-      <TopUpModal isOpen={isTopUpOpen} onClose={() => setIsTopUpOpen(false)} />
-      <AddFundsModal isOpen={isAddFundsOpen} onClose={() => setIsAddFundsOpen(false)} />
-      <ProductVariantModal
-        product={selectedProduct}
-        isOpen={!!selectedProduct}
-        onClose={() => setSelectedProduct(null)}
-      />
-      <RecentSales />
-    </div>
+    </PagePreloader>
   )
 }
 

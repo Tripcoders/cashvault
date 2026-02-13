@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { Search, Menu, X, Wallet, Plus, ShoppingCart, Home, Package, User, MoreHorizontal } from 'lucide-react'
+import { Search, X, Wallet, Plus, ShoppingCart, Home, Package, User, MoreHorizontal } from 'lucide-react'
 import { WalletBalance } from './WalletBalance'
 import { ProfileDropdown } from './ProfileDropdown'
 import { UserAuthButton } from './UserAuthButton'
@@ -34,24 +34,31 @@ export function Header({
   const cartCount = useCartItemCount()
   const [searchQuery, setSearchQuery] = useState('')
 
+  // Get user's first initial for the ghost button
+  const userInitial = user?.displayName?.charAt(0).toUpperCase() || 
+                      user?.primaryEmail?.charAt(0).toUpperCase() || 
+                      'U'
+
   return (
     <>
       {/* Main Header */}
       <header className="sticky top-0 z-40 w-full border-b border-border bg-background/95 backdrop-blur-xl supports-[backdrop-filter]:bg-background/80">
-        <div className="h-16 lg:h-20 px-4 lg:px-6 flex items-center justify-between gap-4">
+        <div className="h-16 px-4 lg:px-6 flex items-center justify-between gap-4">
           
-          {/* Left: Mobile Menu Toggle & Search */}
+          {/* Left: Logo (mobile) & Search */}
           <div className="flex items-center gap-3 flex-1">
-            {/* Mobile Menu Toggle */}
+            {/* Mobile Logo Button - Opens menu */}
             <button
               onClick={onToggleMobileMenu}
-              className="lg:hidden p-2 rounded-lg hover:bg-muted transition-colors flex-shrink-0"
+              className="lg:hidden relative w-8 h-8 flex-shrink-0"
             >
-              {isMobileMenuOpen ? (
-                <X className="w-5 h-5 text-foreground" />
-              ) : (
-                <Menu className="w-5 h-5 text-foreground" />
-              )}
+              <Image
+                src="/logo.png"
+                alt="CashVault"
+                fill
+                className="object-contain"
+                priority
+              />
             </button>
             
             {/* Search - Desktop & Tablet */}
@@ -63,7 +70,7 @@ export function Header({
                   placeholder="Search assets..."
                   value={searchQuery}
                   onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2.5 bg-muted/50 border border-transparent hover:border-border focus:border-primary focus:bg-background rounded-full text-sm transition-all outline-none"
+                  className="w-full pl-10 pr-4 py-2 bg-muted/50 border border-transparent hover:border-border focus:border-primary focus:bg-background rounded-full text-sm transition-all outline-none"
                 />
               </div>
             </div>
@@ -118,16 +125,6 @@ export function Header({
               </div>
             )}
 
-            {/* Mobile: User Avatar */}
-            {user && (
-              <button 
-                onClick={onNavigateToProfile}
-                className="sm:hidden w-9 h-9 rounded-full bg-primary flex items-center justify-center text-white font-bold text-sm flex-shrink-0"
-              >
-                {(user.displayName || 'U').charAt(0).toUpperCase()}
-              </button>
-            )}
-
             {!user && <UserAuthButton />}
           </div>
         </div>
@@ -139,7 +136,7 @@ export function Header({
             <input
               type="text"
               placeholder="Search assets..."
-              className="w-full pl-10 pr-4 py-2.5 bg-muted border border-border rounded-xl text-sm outline-none focus:border-primary"
+              className="w-full pl-10 pr-4 py-2 bg-muted border border-border rounded-xl text-sm outline-none focus:border-primary"
             />
           </div>
         </div>
@@ -148,7 +145,7 @@ export function Header({
       {/* Mobile Bottom Navigation - 5 Icons */}
       {user && (
         <nav className="lg:hidden fixed bottom-0 left-0 right-0 z-50 bg-background/95 backdrop-blur-xl border-t border-border pb-safe">
-          <div className="flex items-center justify-around py-2">
+          <div className="flex items-center justify-around h-16 px-2">
             <BottomNavItem 
               icon={<Home className="w-5 h-5" />}
               label="Shop"
@@ -168,18 +165,42 @@ export function Header({
               active={currentView === 'orders'}
               onClick={() => onChangeView?.('orders')}
             />
-            <BottomNavItem 
-              icon={<User className="w-5 h-5" />}
-              label="Profile"
-              active={currentView === 'profile'}
+            
+            {/* Profile - Ghost Button with Initial */}
+            <button
               onClick={() => onChangeView?.('profile')}
-            />
-            <BottomNavItem 
-              icon={<MoreHorizontal className="w-5 h-5" />}
-              label="More"
-              active={isMobileMenuOpen}
+              className={`flex flex-col items-center justify-center gap-1 min-w-[64px] h-full rounded-lg transition-colors ${
+                currentView === 'profile'
+                  ? 'text-primary' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              {/* Ghost Button with Initial */}
+              <div className={`
+                w-8 h-8 rounded-full flex items-center justify-center text-sm font-bold
+                border-2 transition-all duration-200
+                ${currentView === 'profile'
+                  ? 'border-primary bg-primary/10 text-primary' 
+                  : 'border-muted-foreground/30 bg-transparent text-muted-foreground'
+                }
+              `}>
+                {userInitial}
+              </div>
+              <span className="text-[10px] font-medium">Profile</span>
+            </button>
+
+            {/* More - Opens Mobile Sidebar */}
+            <button
               onClick={onToggleMobileMenu}
-            />
+              className={`flex flex-col items-center justify-center gap-1 min-w-[64px] h-full rounded-lg transition-colors ${
+                isMobileMenuOpen
+                  ? 'text-primary' 
+                  : 'text-muted-foreground hover:text-foreground'
+              }`}
+            >
+              <MoreHorizontal className="w-5 h-5" />
+              <span className="text-[10px] font-medium">More</span>
+            </button>
           </div>
         </nav>
       )}
@@ -199,7 +220,7 @@ function BottomNavItem({ icon, label, active = false, badge = 0, onClick }: Bott
   return (
     <button
       onClick={onClick}
-      className={`flex flex-col items-center gap-0.5 py-1 px-3 min-w-[60px] rounded-lg transition-colors ${
+      className={`flex flex-col items-center justify-center gap-1 min-w-[64px] h-full rounded-lg transition-colors ${
         active 
           ? 'text-primary' 
           : 'text-muted-foreground hover:text-foreground'
@@ -213,7 +234,7 @@ function BottomNavItem({ icon, label, active = false, badge = 0, onClick }: Bott
           </span>
         )}
       </span>
-      <span className="text-[10px] font-medium">{label}</span>
+      <span className="text-[10px] font-medium whitespace-nowrap">{label}</span>
     </button>
   )
 }
