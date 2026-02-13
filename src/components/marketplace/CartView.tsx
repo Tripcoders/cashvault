@@ -1,13 +1,34 @@
 'use client'
 
-import React from 'react'
-import { Trash2, ShoppingCart, ArrowRight, ShieldCheck, CreditCard, Package } from 'lucide-react'
+import React, { useState } from 'react'
+import { Trash2, ShoppingCart, ArrowRight, ShieldCheck, CreditCard, Package, Wallet, X } from 'lucide-react'
 import { useCartStore } from '@/stores/cart-store'
+import { useUserStore } from '@/stores/user-store'
+import { AddFundsModal } from './AddFundsModal'
 
 export function CartView() {
   const { items, removeItem, clearCart } = useCartStore()
+  const { user } = useUserStore()
   const total = useCartStore((state) => state.items.reduce((sum, item) => sum + item.price * item.quantity, 0))
   const itemCount = useCartStore((state) => state.items.reduce((sum, item) => sum + item.quantity, 0))
+  
+  const [showNoFundsModal, setShowNoFundsModal] = useState(false)
+  const [isAddFundsOpen, setIsAddFundsOpen] = useState(false)
+
+  const handleCheckout = () => {
+    const balance = user?.balance || 0
+    if (balance < total) {
+      setShowNoFundsModal(true)
+    } else {
+      // Proceed with checkout
+      alert('Checkout functionality would process the order here')
+    }
+  }
+
+  const handleTopUpFromModal = () => {
+    setShowNoFundsModal(false)
+    setIsAddFundsOpen(true)
+  }
 
   if (items.length === 0) {
     return (
@@ -122,9 +143,20 @@ export function CartView() {
                   ${total.toLocaleString()}
                 </span>
               </div>
+              
+              {/* Show available balance */}
+              <div className="flex justify-between text-sm">
+                <span className="text-muted-foreground">Your Balance</span>
+                <span className={`font-mono font-medium ${(user?.balance || 0) >= total ? 'text-green-600' : 'text-red-500'}`}>
+                  ${(user?.balance || 0).toLocaleString()}
+                </span>
+              </div>
             </div>
 
-            <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:shadow-blue-600/20 hover:-translate-y-0.5 hover-lift-strong">
+            <button 
+              onClick={handleCheckout}
+              className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:shadow-blue-600/20 hover:-translate-y-0.5 hover-lift-strong"
+            >
               Checkout Now
               <ArrowRight className="w-5 h-5" />
             </button>
@@ -145,6 +177,70 @@ export function CartView() {
           </div>
         </div>
       </div>
+
+      {/* No Funds Modal */}
+      {showNoFundsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div
+            className="absolute inset-0 bg-background/60 backdrop-blur-sm transition-opacity"
+            onClick={() => setShowNoFundsModal(false)}
+          />
+          <div className="relative w-full max-w-md bg-background border border-border shadow-2xl rounded-2xl overflow-hidden animate-scale-in-up">
+            {/* Header */}
+            <div className="flex items-center justify-between px-6 py-4 border-b border-border">
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-red-100 dark:bg-red-900/30 rounded-full">
+                  <Wallet className="w-5 h-5 text-red-600" />
+                </div>
+                <h2 className="text-lg font-bold text-foreground">
+                  Insufficient Funds
+                </h2>
+              </div>
+              <button
+                onClick={() => setShowNoFundsModal(false)}
+                className="p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Content */}
+            <div className="p-6 text-center">
+              <div className="w-16 h-16 bg-red-100 dark:bg-red-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
+                <Wallet className="w-8 h-8 text-red-600" />
+              </div>
+              <h3 className="text-xl font-bold text-foreground mb-2">
+                No Funds to Complete Purchase
+              </h3>
+              <p className="text-muted-foreground mb-2">
+                Your current balance is <span className="font-mono font-bold text-foreground">${(user?.balance || 0).toLocaleString()}</span>
+              </p>
+              <p className="text-muted-foreground mb-6">
+                You need <span className="font-mono font-bold text-blue-600">${total.toLocaleString()}</span> to complete this purchase.
+              </p>
+
+              <div className="flex gap-3">
+                <button
+                  onClick={() => setShowNoFundsModal(false)}
+                  className="flex-1 px-4 py-3 bg-muted text-foreground font-medium rounded-xl hover:bg-muted/80 transition-all"
+                >
+                  Cancel
+                </button>
+                <button
+                  onClick={handleTopUpFromModal}
+                  className="flex-1 px-4 py-3 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 transition-all shadow-lg hover:shadow-blue-600/20 flex items-center justify-center gap-2"
+                >
+                  <CreditCard className="w-4 h-4" />
+                  Top Up Now
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Add Funds Modal */}
+      <AddFundsModal isOpen={isAddFundsOpen} onClose={() => setIsAddFundsOpen(false)} />
     </div>
   )
 }

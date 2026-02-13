@@ -60,24 +60,25 @@ export function AccountExpirationBanner({ accountCreatedAt, hasMadeDeposit }: Ac
   }
 
   return (
-    <div className={`fixed top-0 left-0 right-0 z-50 ${bannerClass} border-b backdrop-blur-sm`}>
-      <div className="container mx-auto px-4 py-3">
+    <div className={`fixed top-16 lg:top-0 left-0 right-0 z-40 ${bannerClass} border-b backdrop-blur-sm`}>
+      <div className="container mx-auto px-4 py-2 lg:py-3">
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-3">
-            <AlertTriangle className={`w-5 h-5 ${iconColor} flex-shrink-0`} />
-            <div className="flex items-center gap-4">
-              <span className="font-semibold text-foreground text-sm">
-                {urgencyText}
+          <div className="flex items-center gap-2 lg:gap-3">
+            <AlertTriangle className={`w-4 h-4 lg:w-5 lg:h-5 ${iconColor} flex-shrink-0`} />
+            <div className="flex items-center gap-2 lg:gap-4">
+              <span className="font-semibold text-foreground text-xs lg:text-sm">
+                <span className="hidden lg:inline">{urgencyText}</span>
+                <span className="lg:hidden">Account expires soon!</span>
               </span>
-              <div className="flex items-center gap-2 px-3 py-1.5 bg-background/50 rounded-lg">
-                <Clock className={`w-4 h-4 ${iconColor}`} />
-                <span className="font-mono font-bold text-foreground">
+              <div className="flex items-center gap-1.5 lg:gap-2 px-2 lg:px-3 py-1 lg:py-1.5 bg-background/50 rounded-lg">
+                <Clock className={`w-3 h-3 lg:w-4 lg:h-4 ${iconColor}`} />
+                <span className="font-mono font-bold text-foreground text-xs lg:text-sm">
                   {String(hoursLeft).padStart(2, '0')}:
                   {String(minutesLeft).padStart(2, '0')}:
                   {String(secondsLeft).padStart(2, '0')}
                 </span>
               </div>
-              <span className="text-sm text-muted-foreground hidden sm:inline">
+              <span className="text-xs lg:text-sm text-muted-foreground hidden sm:inline">
                 Make a deposit to keep your account active
               </span>
             </div>

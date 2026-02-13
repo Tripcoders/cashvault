@@ -2,6 +2,7 @@
 
 import React from 'react'
 import { useEffect } from 'react'
+import Image from 'next/image'
 import { AlertTriangle, RefreshCw, Home, ArrowLeft } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -24,6 +25,18 @@ export default function ErrorPage({
       <div className="max-w-md w-full">
         {/* Error Card */}
         <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
+          {/* Logo */}
+          <div className="flex justify-center mb-4">
+            <div className="relative w-12 h-12">
+              <Image
+                src="/logo.png"
+                alt="CashVault"
+                fill
+                className="object-contain"
+              />
+            </div>
+          </div>
+
           {/* Icon */}
           <div className="flex justify-center mb-6">
             <div className="w-20 h-20 bg-red-500/10 rounded-full flex items-center justify-center">

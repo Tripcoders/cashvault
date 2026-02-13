@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import Link from 'next/link'
 import { Search, Home, ArrowLeft, Package } from 'lucide-react'
 
@@ -12,8 +13,13 @@ export default function NotFoundPage() {
         <div className="bg-card border border-border rounded-2xl p-8 shadow-xl">
           {/* Logo */}
           <div className="flex justify-center mb-6">
-            <div className="w-12 h-12 bg-primary rounded-xl flex items-center justify-center">
-              <span className="text-primary-foreground font-bold text-xl">C</span>
+            <div className="relative w-12 h-12">
+              <Image
+                src="/logo.png"
+                alt="CashVault"
+                fill
+                className="object-contain"
+              />
             </div>
           </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { CATEGORIES, getIconComponent } from '@/lib/data'
 import { useCartItemCount } from '@/stores/cart-store'
 import { useUser } from "@stackframe/stack";
@@ -48,17 +49,29 @@ export function Sidebar({
     >
       {/* Logo & Toggle */}
       <div className={`h-16 flex items-center ${isCollapsed ? 'justify-center px-2' : 'justify-between px-4'} border-b border-border flex-shrink-0 transition-all duration-500`}>
-        {/* Logo - Small when expanded, "C" when collapsed */}
+        {/* Logo - Small when expanded, icon when collapsed */}
         {!isCollapsed ? (
           <div className="flex items-center gap-2 transition-all duration-500 animate-in fade-in slide-in-from-left-2">
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-              <span className="text-white font-bold text-lg">C</span>
+            <div className="relative w-8 h-8">
+              <Image
+                src="/logo.png"
+                alt="CashVault"
+                fill
+                className="object-contain"
+                priority
+              />
             </div>
             <span className="font-bold text-lg text-foreground">CashVault</span>
           </div>
         ) : (
-          <div className="w-10 h-10 bg-primary rounded-lg flex items-center justify-center transition-all duration-500 hover:scale-105 hover:shadow-lg hover:shadow-primary/25">
-            <span className="text-white font-bold text-xl">C</span>
+          <div className="relative w-10 h-10 transition-all duration-500 hover:scale-105">
+            <Image
+              src="/logo.png"
+              alt="CashVault"
+              fill
+              className="object-contain"
+              priority
+            />
           </div>
         )}
 

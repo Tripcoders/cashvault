@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { AlertTriangle, RefreshCw } from 'lucide-react'
 
 export default function GlobalError({
@@ -19,8 +20,13 @@ export default function GlobalError({
             <div className="bg-slate-900 border border-slate-800 rounded-2xl p-8 shadow-2xl">
               {/* Logo */}
               <div className="flex justify-center mb-6">
-                <div className="w-12 h-12 bg-blue-600 rounded-xl flex items-center justify-center">
-                  <span className="text-white font-bold text-xl">C</span>
+                <div className="relative w-12 h-12">
+                  <Image
+                    src="/logo.png"
+                    alt="CashVault"
+                    fill
+                    className="object-contain"
+                  />
                 </div>
               </div>
 

@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState } from 'react'
+import Image from 'next/image'
 import { Search, Bell, Menu, X, Wallet, Plus, ShoppingCart, Home, Package, User, MoreHorizontal } from 'lucide-react'
 import { WalletBalance } from './WalletBalance'
 import { ProfileDropdown } from './ProfileDropdown'

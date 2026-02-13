@@ -1,6 +1,7 @@
 'use client'
 
 import React from 'react'
+import Image from 'next/image'
 import { X, ShoppingBag, ShoppingCart, ClipboardList, Plus, MessageCircle, User, LogOut, LayoutDashboard, Settings, CreditCard, Shield, Home, Package } from 'lucide-react'
 import { CATEGORIES, getIconComponent } from '@/lib/data'
 import { useUser } from "@stackframe/stack";
@@ -80,15 +81,19 @@ export function MobileSidebar({
       />
       
       {/* Sidebar Drawer */}
-      <aside className="fixed inset-y-0 left-0 w-[300px] bg-background border-r border-border z-50 lg:hidden flex flex-col animate-slide-in-left">
+      <aside className="fixed inset-y-0 left-0 w-[300px] bg-background border-r border-border z-50 lg:hidden flex flex-col animate-slide-in-left max-h-screen overflow-hidden">
         {/* Header */}
         <div className="h-16 flex items-center justify-between px-4 border-b border-border">
           <div className="flex items-center gap-2">
-            <img
-              src="/logo.png"
-              alt="CashVault"
-              className="h-5 w-auto object-contain"
-            />
+            <div className="relative h-6 w-24">
+              <Image
+                src="/logo.png"
+                alt="CashVault"
+                fill
+                className="object-contain"
+                priority
+              />
+            </div>
           </div>
           <button
             onClick={onClose}
@@ -124,7 +129,7 @@ export function MobileSidebar({
         )}
 
         {/* Navigation - Scrollable */}
-        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6 pb-20">
           {/* Main Menu */}
           <div className="space-y-1">
             <p className="px-3 text-xs font-bold text-muted-foreground uppercase tracking-wider mb-2">

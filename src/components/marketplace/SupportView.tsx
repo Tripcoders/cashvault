@@ -1,9 +1,67 @@
 'use client'
 
-import React from 'react'
-import { MessageCircle, Send, Phone, Mail, Clock, HelpCircle, ArrowRight } from 'lucide-react'
+import React, { useState } from 'react'
+import { MessageCircle, Send, Phone, Mail, Clock, HelpCircle, ArrowRight, Inbox, X, CheckCircle } from 'lucide-react'
+
+interface Ticket {
+  id: string
+  subject: string
+  status: 'Open' | 'In Progress' | 'Resolved' | 'Closed'
+  date: string
+  priority: 'Low' | 'Medium' | 'High'
+}
 
 export function SupportView() {
+  const [selectedPriority, setSelectedPriority] = useState<'Low' | 'Medium' | 'High'>('Medium')
+  const [tickets, setTickets] = useState<Ticket[]>([
+    { id: 'TKT-001', subject: 'Unable to download files', status: 'Resolved', date: '2 hours ago', priority: 'High' },
+    { id: 'TKT-002', subject: 'Payment not processed', status: 'In Progress', date: '5 hours ago', priority: 'Medium' },
+    { id: 'TKT-003', subject: 'Account verification issue', status: 'Open', date: '1 day ago', priority: 'Low' },
+  ])
+  const [showAllTickets, setShowAllTickets] = useState(false)
+  const [subject, setSubject] = useState('')
+  const [message, setMessage] = useState('')
+  const [showSuccess, setShowSuccess] = useState(false)
+
+  const handlePrioritySelect = (priority: 'Low' | 'Medium' | 'High') => {
+    setSelectedPriority(priority)
+  }
+
+  const handleSubmitTicket = (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!subject.trim() || !message.trim()) return
+
+    const newTicket: Ticket = {
+      id: `TKT-${String(tickets.length + 1).padStart(3, '0')}`,
+      subject: subject,
+      status: 'Open',
+      date: 'Just now',
+      priority: selectedPriority
+    }
+
+    setTickets([newTicket, ...tickets])
+    setSubject('')
+    setMessage('')
+    setShowSuccess(true)
+    setTimeout(() => setShowSuccess(false), 3000)
+  }
+
+  const handleEmailClick = () => {
+    window.location.href = 'mailto:support@cashvault.com'
+  }
+
+  const handlePhoneClick = () => {
+    window.location.href = 'tel:+18001234567'
+  }
+
+  const handleLiveChatClick = () => {
+    alert('Live chat will be available soon! For now, please submit a ticket or email us.')
+  }
+
+  const handleViewAllTickets = () => {
+    setShowAllTickets(true)
+  }
+
   return (
     <div className="max-w-4xl mx-auto">
       {/* Header */}
@@ -22,7 +80,10 @@ export function SupportView() {
 
       {/* Quick Actions */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 animate-fade-in-up stagger-3">
-        <button className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group">
+        <button 
+          onClick={handleEmailClick}
+          className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group"
+        >
           <div className="flex flex-col items-center gap-4">
             <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
               <Mail className="w-7 h-7" />
@@ -32,7 +93,10 @@ export function SupportView() {
           </div>
         </button>
 
-        <button className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group">
+        <button 
+          onClick={handlePhoneClick}
+          className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group"
+        >
           <div className="flex flex-col items-center gap-4">
             <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
               <Phone className="w-7 h-7" />
@@ -42,7 +106,10 @@ export function SupportView() {
           </div>
         </button>
 
-        <button className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group">
+        <button 
+          onClick={handleLiveChatClick}
+          className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group"
+        >
           <div className="flex flex-col items-center gap-4">
             <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
               <MessageCircle className="w-7 h-7" />
@@ -73,13 +140,23 @@ export function SupportView() {
             </div>
           </div>
 
-          <form className="space-y-6">
+          {/* Success Message */}
+          {showSuccess && (
+            <div className="mb-4 p-4 bg-green-100 dark:bg-green-900/30 border border-green-200 dark:border-green-800 rounded-xl flex items-center gap-3 animate-fade-in-up">
+              <CheckCircle className="w-5 h-5 text-green-600" />
+              <span className="text-green-700 dark:text-green-400 font-medium">Ticket submitted successfully!</span>
+            </div>
+          )}
+
+          <form className="space-y-6" onSubmit={handleSubmitTicket}>
             <div>
               <label className="block text-sm font-bold text-foreground mb-2">
                 Subject
               </label>
               <input
                 type="text"
+                value={subject}
+                onChange={(e) => setSubject(e.target.value)}
                 placeholder="Brief description of your issue"
                 className="w-full px-4 py-3 bg-background border-2 border-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl outline-none transition-all hover:border-blue-500/50"
               />
@@ -91,6 +168,8 @@ export function SupportView() {
               </label>
               <textarea
                 rows={4}
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
                 placeholder="Describe your issue in detail..."
                 className="w-full px-4 py-3 bg-background border-2 border-border focus:border-blue-500 focus:ring-4 focus:ring-blue-500/10 rounded-xl outline-none transition-all hover:border-blue-500/50 resize-none"
               />
@@ -101,14 +180,15 @@ export function SupportView() {
                 Priority
               </label>
               <div className="grid grid-cols-3 gap-3">
-                {['Low', 'Medium', 'High'].map((priority, idx) => (
+                {['Low', 'Medium', 'High'].map((priority) => (
                   <button
                     key={priority}
                     type="button"
-                    className={`px-4 py-3 border-2 border-border rounded-xl text-sm font-bold transition-all hover-lift ${
-                      idx === 1
+                    onClick={() => handlePrioritySelect(priority as 'Low' | 'Medium' | 'High')}
+                    className={`px-4 py-3 border-2 rounded-xl text-sm font-bold transition-all hover-lift ${
+                      selectedPriority === priority
                         ? 'bg-blue-600 border-blue-600 text-white shadow-md'
-                        : 'hover:border-blue-500 hover:text-blue-600'
+                        : 'border-border hover:border-blue-500 hover:text-blue-600'
                     }`}
                   >
                     {priority}
@@ -119,7 +199,8 @@ export function SupportView() {
 
             <button
               type="submit"
-              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:shadow-blue-600/20 hover:-translate-y-0.5 hover-lift-strong animate-fade-in-up"
+              disabled={!subject.trim() || !message.trim()}
+              className="w-full bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:opacity-50 disabled:cursor-not-allowed text-white font-bold py-4 rounded-xl flex items-center justify-center gap-2 transition-all shadow-lg hover:shadow-xl hover:shadow-blue-600/20 hover:-translate-y-0.5 hover-lift-strong animate-fade-in-up"
             >
               <Send className="w-5 h-5" />
               Submit Ticket
@@ -134,51 +215,80 @@ export function SupportView() {
             Recent Tickets
           </h3>
 
-          <div className="space-y-4">
-            {[
-              { id: 'TKT-001', subject: 'Unable to download files', status: 'Resolved', date: '2 hours ago' },
-              { id: 'TKT-002', subject: 'Payment not processed', status: 'In Progress', date: '5 hours ago' },
-              { id: 'TKT-003', subject: 'Account verification issue', status: 'Open', date: '1 day ago' },
-            ].map((ticket, idx) => (
-              <div
-                key={ticket.id}
-                className="p-4 bg-muted/30 dark:bg-muted/20 border border-border rounded-xl hover:border-blue-500/30 hover:bg-blue-50/10 dark:hover:bg-blue-900/10 transition-all hover-lift animate-face-in-up"
-                style={{ animationDelay: `${idx * 100}ms` }}
-              >
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex-1">
-                    <p className="font-bold text-foreground text-sm mb-1">
-                      {ticket.subject}
-                    </p>
-                    <p className="text-xs text-muted-foreground">
-                      ID: {ticket.id}
-                    </p>
-                  </div>
-                  <div className="text-right">
-                    <span
-                      className={`px-3 py-1 text-xs font-bold rounded-lg ${
-                        ticket.status === 'Open'
-                          ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
-                          : ticket.status === 'In Progress'
-                          ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
-                          : 'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400'
-                      }`}
-                    >
-                      {ticket.status}
-                    </span>
-                    <p className="text-xs text-muted-foreground mt-1">
-                      {ticket.date}
-                    </p>
-                  </div>
-                </div>
+          {tickets.length === 0 ? (
+            /* Empty State */
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <Inbox className="w-8 h-8 text-muted-foreground" />
               </div>
-            ))}
-          </div>
+              <h4 className="text-lg font-semibold text-foreground mb-2">No tickets yet</h4>
+              <p className="text-muted-foreground text-sm max-w-xs mx-auto">
+                You haven't submitted any support tickets yet. Create one if you need help!
+              </p>
+            </div>
+          ) : (
+            <>
+              <div className="space-y-4">
+                {(showAllTickets ? tickets : tickets.slice(0, 3)).map((ticket, idx) => (
+                  <div
+                    key={ticket.id}
+                    className="p-4 bg-muted/30 dark:bg-muted/20 border border-border rounded-xl hover:border-blue-500/30 hover:bg-blue-50/10 dark:hover:bg-blue-900/10 transition-all hover-lift animate-face-in-up cursor-pointer"
+                    style={{ animationDelay: `${idx * 100}ms` }}
+                  >
+                    <div className="flex items-start justify-between gap-4">
+                      <div className="flex-1">
+                        <p className="font-bold text-foreground text-sm mb-1">
+                          {ticket.subject}
+                        </p>
+                        <p className="text-xs text-muted-foreground">
+                          ID: {ticket.id} • Priority: <span className={`font-medium ${
+                            ticket.priority === 'High' ? 'text-red-500' : 
+                            ticket.priority === 'Medium' ? 'text-yellow-500' : 'text-green-500'
+                          }`}>{ticket.priority}</span>
+                        </p>
+                      </div>
+                      <div className="text-right">
+                        <span
+                          className={`px-3 py-1 text-xs font-bold rounded-lg ${
+                            ticket.status === 'Open'
+                              ? 'bg-green-100 dark:bg-green-900/30 text-green-600 dark:text-green-400'
+                              : ticket.status === 'In Progress'
+                              ? 'bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400'
+                              : 'bg-gray-100 dark:bg-gray-900/30 text-gray-600 dark:text-gray-400'
+                          }`}
+                        >
+                          {ticket.status}
+                        </span>
+                        <p className="text-xs text-muted-foreground mt-1">
+                          {ticket.date}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
 
-          <button className="w-full mt-6 flex items-center justify-center gap-2 px-6 py-3 bg-muted/50 dark:bg-muted/30 border border-border hover:border-blue-500/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-sm font-medium transition-all hover-lift">
-            View All Tickets
-            <ArrowRight className="w-4 h-4" />
-          </button>
+              {tickets.length > 3 && !showAllTickets && (
+                <button 
+                  onClick={handleViewAllTickets}
+                  className="w-full mt-6 flex items-center justify-center gap-2 px-6 py-3 bg-muted/50 dark:bg-muted/30 border border-border hover:border-blue-500/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-sm font-medium transition-all hover-lift"
+                >
+                  View All Tickets
+                  <ArrowRight className="w-4 h-4" />
+                </button>
+              )}
+
+              {showAllTickets && tickets.length > 3 && (
+                <button 
+                  onClick={() => setShowAllTickets(false)}
+                  className="w-full mt-6 flex items-center justify-center gap-2 px-6 py-3 bg-muted/50 dark:bg-muted/30 border border-border hover:border-blue-500/30 hover:text-blue-600 dark:hover:text-blue-400 rounded-xl text-sm font-medium transition-all hover-lift"
+                >
+                  Show Less
+                  <X className="w-4 h-4" />
+                </button>
+              )}
+            </>
+          )}
         </div>
       </div>
 
