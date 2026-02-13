@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react'
 import Image from 'next/image'
-import { Search, Bell, Menu, X, Wallet, Plus, ShoppingCart, Home, Package, User, MoreHorizontal } from 'lucide-react'
+import { Search, Menu, X, Wallet, Plus, ShoppingCart, Home, Package, User, MoreHorizontal } from 'lucide-react'
 import { WalletBalance } from './WalletBalance'
 import { ProfileDropdown } from './ProfileDropdown'
 import { UserAuthButton } from './UserAuthButton'
 import { HeaderCountdown } from './HeaderCountdown'
+import { NotificationsDropdown } from './NotificationsDropdown'
 import { useUser } from "@stackframe/stack";
 import { useUserStore } from '@/stores/user-store'
 import { useCartItemCount } from '@/stores/cart-store'
@@ -80,11 +81,8 @@ export function Header({
 
           {/* Right: Actions */}
           <div className="flex items-center gap-2 lg:gap-4 justify-end">
-            {/* Notifications - Desktop */}
-            <button className="hidden sm:flex p-2 text-muted-foreground hover:text-foreground hover:bg-muted rounded-full transition-all relative flex-shrink-0">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-1.5 right-1.5 w-2 h-2 bg-primary rounded-full border-2 border-background" />
-            </button>
+            {/* Notifications */}
+            <NotificationsDropdown />
 
             {/* Divider - Desktop */}
             <div className="hidden lg:block w-px h-6 bg-border" />

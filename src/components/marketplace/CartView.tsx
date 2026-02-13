@@ -6,7 +6,11 @@ import { useCartStore } from '@/stores/cart-store'
 import { useUserStore } from '@/stores/user-store'
 import { AddFundsModal } from './AddFundsModal'
 
-export function CartView() {
+interface CartViewProps {
+  onNavigateToShop?: () => void
+}
+
+export function CartView({ onNavigateToShop }: CartViewProps = {}) {
   const { items, removeItem, clearCart } = useCartStore()
   const { user } = useUserStore()
   const total = useCartStore((state) => state.items.reduce((sum, item) => sum + item.price * item.quantity, 0))
@@ -44,7 +48,7 @@ export function CartView() {
           find premium digital assets.
         </p>
         <button
-          onClick={() => (window as any).router?.push?.('/')}
+          onClick={() => onNavigateToShop?.()}
           className="px-6 py-3 bg-blue-600 text-white text-sm font-bold rounded-lg hover:bg-blue-700 hover:shadow-lg hover:shadow-blue-600/20 hover:-translate-y-0.5 transition-all duration-300 hover-lift animate-fade-in-up stagger-3"
         >
           Start Shopping

@@ -1,11 +1,12 @@
 'use client'
 
 import React from 'react'
-import { ShoppingCart, Eye, Building2, CreditCard, Wallet, Bot, Shield, Server, Globe, ArrowLeftRight } from 'lucide-react'
-import { Product } from '@/lib/data'
+import { ShoppingCart, Eye, Building2, CreditCard, Wallet, Bot, Shield, Server, Globe, ArrowLeftRight, Layers } from 'lucide-react'
+import { Product, PRODUCTS } from '@/lib/data'
 import { useCartStore } from '@/stores/cart-store'
 import { useToast } from '@/hooks/use-toast'
 import { getBrandColors, getLogoUrl } from '@/lib/product-images'
+import { hasMultipleVariants, getProductVariants } from '@/lib/product-variants'
 
 interface ProductCardProps {
   product: Product
@@ -69,6 +70,8 @@ export function ProductCard({ product, index, onClick }: ProductCardProps) {
 
   const isLowStock = product.stock <= 3
   const isOutOfStock = product.stock === 0
+  const hasVariants = hasMultipleVariants(product, PRODUCTS)
+  const variantCount = getProductVariants(product, PRODUCTS).length
 
   return (
     <div
@@ -100,6 +103,14 @@ export function ProductCard({ product, index, onClick }: ProductCardProps) {
         {product.grade && (
           <div className={`absolute top-2 sm:top-3 right-2 sm:right-3 px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold z-20 ${getGradeColor(product.grade)}`}>
             {product.grade}
+          </div>
+        )}
+
+        {/* Variants Badge */}
+        {hasVariants && (
+          <div className="absolute top-2 sm:top-3 right-2 sm:right-3 mt-6 sm:mt-7 px-2 py-0.5 sm:py-1 rounded-full text-[10px] sm:text-xs font-bold z-20 bg-amber-500 text-white flex items-center gap-1">
+            <Layers className="w-3 h-3" />
+            {variantCount} options
           </div>
         )}
 
@@ -158,7 +169,7 @@ export function ProductCard({ product, index, onClick }: ProductCardProps) {
             }}
           >
             <Eye className="w-4 h-4" />
-            Quick View
+            {hasVariants ? `View ${variantCount} Options` : 'Quick View'}
           </button>
         </div>
       </div>

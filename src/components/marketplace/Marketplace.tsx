@@ -15,7 +15,7 @@ import { SupportView } from './SupportView'
 import { PRODUCTS as INITIAL_PRODUCTS, CATEGORIES, Product, BANNER_IMAGE } from '@/lib/data'
 import { useUser } from "@stackframe/stack";
 import { Search, ShieldCheck, Users, Clock, TrendingUp, ChevronRight, Wallet } from 'lucide-react'
-import { ProductDetailModal } from './ProductDetailModal'
+import { ProductVariantModal } from './ProductVariantModal'
 import { SettingsView } from './SettingsView'
 import { SecurityView } from './SecurityView'
 import { useUserStore } from '@/stores/user-store'
@@ -127,7 +127,7 @@ export function Marketplace() {
   const renderContent = () => {
     switch (currentView) {
       case 'cart':
-        return <CartView />
+        return <CartView onNavigateToShop={() => setCurrentView('shop')} />
       case 'orders':
         return <MyPurchasesView />
       case 'profile':
@@ -381,7 +381,7 @@ export function Marketplace() {
 
       <TopUpModal isOpen={isTopUpOpen} onClose={() => setIsTopUpOpen(false)} />
       <AddFundsModal isOpen={isAddFundsOpen} onClose={() => setIsAddFundsOpen(false)} />
-      <ProductDetailModal
+      <ProductVariantModal
         product={selectedProduct}
         isOpen={!!selectedProduct}
         onClose={() => setSelectedProduct(null)}
