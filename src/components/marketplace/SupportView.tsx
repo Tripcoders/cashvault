@@ -1,7 +1,22 @@
 'use client'
 
 import React, { useState } from 'react'
-import { MessageCircle, Send, Phone, Mail, Clock, HelpCircle, ArrowRight, Inbox, X, CheckCircle } from 'lucide-react'
+import { motion } from 'framer-motion'
+import { 
+  MessageCircle, 
+  Send, 
+  Phone, 
+  Mail, 
+  Clock, 
+  HelpCircle, 
+  ArrowRight, 
+  Inbox, 
+  X, 
+  CheckCircle,
+  Bot,
+  ExternalLink
+} from 'lucide-react'
+import { useChatStore } from '@/stores/chat-store'
 
 interface Ticket {
   id: string
@@ -22,6 +37,8 @@ export function SupportView() {
   const [subject, setSubject] = useState('')
   const [message, setMessage] = useState('')
   const [showSuccess, setShowSuccess] = useState(false)
+  const [showLiveChat, setShowLiveChat] = useState(false)
+  const { toggleChat } = useChatStore()
 
   const handlePrioritySelect = (priority: 'Low' | 'Medium' | 'High') => {
     setSelectedPriority(priority)
@@ -55,7 +72,11 @@ export function SupportView() {
   }
 
   const handleLiveChatClick = () => {
-    alert('Live chat will be available soon! For now, please submit a ticket or email us.')
+    toggleChat()
+  }
+
+  const handleTelegramClick = () => {
+    window.open('https://t.me/CashVaultSupport', '_blank')
   }
 
   const handleViewAllTickets = () => {
@@ -63,7 +84,7 @@ export function SupportView() {
   }
 
   return (
-    <div className="max-w-4xl mx-auto">
+    <div className="max-w-4xl mx-auto pb-24 lg:pb-8">
       {/* Header */}
       <div className="text-center mb-10 animate-face-in-up">
         <div className="w-20 h-20 bg-gradient-to-br from-blue-500 to-blue-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-blue-600/30 animate-bounce-subtle">
@@ -78,8 +99,27 @@ export function SupportView() {
         </p>
       </div>
 
-      {/* Quick Actions */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10 animate-fade-in-up stagger-3">
+      {/* Quick Actions - Now includes Live Chat */}
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-10 animate-fade-in-up stagger-3">
+        {/* AI Live Chat */}
+        <motion.button 
+          onClick={handleLiveChatClick}
+          whileHover={{ scale: 1.02 }}
+          whileTap={{ scale: 0.98 }}
+          className="p-6 bg-card border-2 border-blue-500/30 rounded-2xl hover:shadow-xl hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group"
+        >
+          <div className="flex flex-col items-center gap-4">
+            <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+              <Bot className="w-7 h-7" />
+            </div>
+            <span className="text-lg font-bold text-foreground">AI Live Chat</span>
+            <span className="text-sm text-green-600 flex items-center gap-1">
+              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
+              Available Now
+            </span>
+          </div>
+        </motion.button>
+
         <button 
           onClick={handleEmailClick}
           className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group"
@@ -107,20 +147,42 @@ export function SupportView() {
         </button>
 
         <button 
-          onClick={handleLiveChatClick}
+          onClick={handleTelegramClick}
           className="p-6 bg-card border-2 border-border rounded-2xl hover:shadow-xl hover:border-blue-500/30 hover:border-blue-500 hover:-translate-y-1 transition-all duration-300 hover-lift-strong group"
         >
           <div className="flex flex-col items-center gap-4">
-            <div className="w-14 h-14 bg-blue-100 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
-              <MessageCircle className="w-7 h-7" />
+            <div className="w-14 h-14 bg-[#0088cc]/10 text-[#0088cc] rounded-xl flex items-center justify-center group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+              <svg className="w-7 h-7" viewBox="0 0 24 24" fill="currentColor">
+                <path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/>
+              </svg>
             </div>
-            <span className="text-lg font-bold text-foreground">Live Chat</span>
-            <span className="text-sm text-green-600 flex items-center gap-1">
-              <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-              Online
-            </span>
+            <span className="text-lg font-bold text-foreground">Telegram</span>
+            <span className="text-sm text-muted-foreground">@CashVaultSupport</span>
           </div>
         </button>
+      </div>
+
+      {/* Live Chat Info Card */}
+      <div className="bg-gradient-to-r from-blue-600/10 to-purple-600/10 border border-blue-500/20 rounded-2xl p-6 mb-10">
+        <div className="flex flex-col md:flex-row items-center gap-6">
+          <div className="w-16 h-16 bg-blue-600 rounded-2xl flex items-center justify-center flex-shrink-0">
+            <Bot className="w-8 h-8 text-white" />
+          </div>
+          <div className="flex-1 text-center md:text-left">
+            <h3 className="text-xl font-bold text-foreground mb-2">Try Our AI Live Chat</h3>
+            <p className="text-muted-foreground">
+              Get instant answers to your questions about products, pricing, deposits, and more. 
+              Our AI assistant is available 24/7 and can connect you to human support when needed.
+            </p>
+          </div>
+          <button
+            onClick={handleLiveChatClick}
+            className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-colors flex items-center gap-2 flex-shrink-0"
+          >
+            <MessageCircle className="w-5 h-5" />
+            Start Chat
+          </button>
+        </div>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
@@ -223,7 +285,7 @@ export function SupportView() {
               </div>
               <h4 className="text-lg font-semibold text-foreground mb-2">No tickets yet</h4>
               <p className="text-muted-foreground text-sm max-w-xs mx-auto">
-                You haven't submitted any support tickets yet. Create one if you need help!
+                You haven&apos;t submitted any support tickets yet. Create one if you need help!
               </p>
             </div>
           ) : (

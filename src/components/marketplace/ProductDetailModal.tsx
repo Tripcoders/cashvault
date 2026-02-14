@@ -5,15 +5,24 @@ import Image from 'next/image'
 import {
     Dialog,
     DialogContent,
-    DialogHeader,
-    DialogTitle,
 } from "@/components/ui/dialog"
 import { Product } from '@/lib/data'
 import { useCartStore } from '@/stores/cart-store'
 import { Badge } from "@/components/ui/badge"
-import { ShieldCheck, ShoppingCart, Star, Clock, Trophy, CheckCircle2, X, MessageCircle, Wallet } from 'lucide-react'
+import { 
+    ShieldCheck, 
+    ShoppingCart, 
+    Clock, 
+    Trophy, 
+    CheckCircle2, 
+    X, 
+    MessageCircle,
+    Wallet,
+    Building2,
+    CreditCard,
+    Package
+} from 'lucide-react'
 import { useToast } from '@/hooks/use-toast'
-import { useUserStore } from '@/stores/user-store'
 
 interface ProductDetailModalProps {
     product: Product | null
@@ -24,8 +33,6 @@ interface ProductDetailModalProps {
 export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailModalProps) {
     const addItem = useCartStore((state) => state.addItem)
     const { toast } = useToast()
-    const { user } = useUserStore()
-    const [imageError, setImageError] = useState(false)
     const [showContactSupport, setShowContactSupport] = useState(false)
 
     if (!product) return null
@@ -39,143 +46,181 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
         onClose()
     }
 
-    const handleContactSupport = () => {
-        setShowContactSupport(true)
+    // Get appropriate icon based on category
+    const getCategoryIcon = () => {
+        switch (product.category) {
+            case 'bank-logs':
+                return <Building2 className="w-5 h-5" />
+            case 'cc-topup':
+                return <CreditCard className="w-5 h-5" />
+            case 'paypal':
+                return <Wallet className="w-5 h-5" />
+            default:
+                return <Package className="w-5 h-5" />
+        }
+    }
+
+    // Extract bank name from title for display
+    const getDisplayTitle = () => {
+        if (product.category === 'bank-logs' && product.bankName) {
+            return product.bankName
+        }
+        return product.title
     }
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
-            <DialogContent className="max-w-lg p-0 overflow-hidden bg-card border-border rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
-                {/* Single Column Layout */}
-                <div className="flex flex-col">
-                    {/* Header Image with Logo Fallback */}
-                    <div className="relative w-full h-48 bg-muted">
-                        {!imageError ? (
-                            <img
-                                src={product.image}
-                                alt={product.title}
-                                className="w-full h-full object-cover"
-                                onError={() => setImageError(true)}
-                            />
-                        ) : (
-                            <div className="w-full h-full flex items-center justify-center bg-gradient-to-br from-blue-600/20 to-blue-800/20">
-                                <div className="relative w-24 h-24">
-                                    <Image
-                                        src="/logo.png"
-                                        alt="CashVault"
-                                        fill
-                                        className="object-contain opacity-80"
-                                    />
-                                </div>
+            <DialogContent className="max-w-md p-0 overflow-hidden bg-card border-border rounded-2xl shadow-2xl max-h-[90vh] overflow-y-auto">
+                {/* Header with Logo Background */}
+                <div className="relative w-full h-40 bg-gradient-to-br from-blue-600/10 to-blue-900/10 flex items-center justify-center">
+                    {/* Logo */}
+                    <div className="relative w-28 h-28">
+                        <Image
+                            src="/logo.png"
+                            alt="CashVault"
+                            fill
+                            className="object-contain opacity-70"
+                        />
+                    </div>
+                    
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    
+                    {/* Badges */}
+                    <div className="absolute top-4 left-4 flex gap-2">
+                        <Badge variant="secondary" className="bg-blue-600/90 text-white font-bold border-none">
+                            {product.grade || 'Standard'}
+                        </Badge>
+                    </div>
+
+                    {/* Close Button */}
+                    <button
+                        onClick={onClose}
+                        className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors z-10"
+                    >
+                        <X className="w-5 h-5" />
+                    </button>
+
+                    {/* Verified Badge */}
+                    <div className="absolute bottom-4 left-4 right-4">
+                        <div className="flex items-center gap-2 text-blue-400 font-bold text-xs uppercase tracking-widest">
+                            <ShieldCheck className="w-4 h-4" />
+                            Verified Asset
+                        </div>
+                    </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-6 space-y-5">
+                    {/* Title & Category */}
+                    <div>
+                        <div className="flex items-center gap-2 mb-2 text-muted-foreground">
+                            {getCategoryIcon()}
+                            <span className="text-xs font-bold uppercase tracking-wider">
+                                {product.category.replace(/-/g, ' ')}
+                            </span>
+                        </div>
+                        <h2 className="text-xl font-bold text-foreground tracking-tight">
+                            {getDisplayTitle()}
+                        </h2>
+                        <p className="text-muted-foreground text-sm leading-relaxed mt-2">
+                            {product.description}
+                        </p>
+                    </div>
+
+                    {/* Product Details Card */}
+                    <div className="bg-muted/50 rounded-xl p-4 space-y-3">
+                        {product.bankBalance && (
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">Balance</span>
+                                <span className="text-lg font-bold text-foreground">{product.bankBalance}</span>
                             </div>
                         )}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
-                        
-                        {/* Badges */}
-                        <div className="absolute top-4 left-4 flex gap-2">
-                            <Badge variant="secondary" className="bg-blue-600/90 text-white font-bold border-none">
-                                {product.grade || 'Standard'}
-                            </Badge>
-                        </div>
-
-                        {/* Close Button */}
-                        <button
-                            onClick={onClose}
-                            className="absolute top-4 right-4 p-2 bg-black/30 hover:bg-black/50 rounded-full text-white transition-colors"
-                        >
-                            <X className="w-5 h-5" />
-                        </button>
-
-                        {/* Title Overlay */}
-                        <div className="absolute bottom-4 left-4 right-4">
-                            <div className="flex items-center gap-2 mb-2 text-blue-400 font-bold text-xs uppercase tracking-widest">
-                                <ShieldCheck className="w-4 h-4" />
-                                Verified Asset
+                        {product.cardType && (
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">Card Type</span>
+                                <span className="text-sm font-bold text-foreground">{product.cardType}</span>
                             </div>
-                            <DialogTitle className="text-xl font-bold text-white tracking-tight">
-                                {product.title}
-                            </DialogTitle>
+                        )}
+                        {product.paypalBalance && (
+                            <div className="flex items-center justify-between">
+                                <span className="text-sm text-muted-foreground">PayPal Balance</span>
+                                <span className="text-lg font-bold text-foreground">{product.paypalBalance}</span>
+                            </div>
+                        )}
+                        <div className="flex items-center justify-between pt-2 border-t border-border">
+                            <span className="text-sm text-muted-foreground">Stock Available</span>
+                            <span className="text-sm font-bold text-green-500">{product.stock} units</span>
                         </div>
                     </div>
 
-                    {/* Content */}
-                    <div className="p-6 space-y-6">
-                        <DialogHeader className="m-0">
-                            <p className="text-muted-foreground text-sm leading-relaxed">
-                                {product.description}
-                            </p>
-                        </DialogHeader>
-
-                        {/* Features List - Single Column */}
+                    {/* Features List */}
+                    {product.features && product.features.length > 0 && (
                         <div className="space-y-2">
                             <h4 className="text-sm font-semibold text-foreground">Features</h4>
                             <div className="space-y-2">
-                                {product.features?.map((feature, idx) => (
-                                    <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-muted/50 border border-border/50">
-                                        <CheckCircle2 className="w-5 h-5 text-green-500 mt-0.5 flex-shrink-0" />
-                                        <span className="text-sm font-medium text-foreground">{feature}</span>
+                                {product.features.slice(0, 5).map((feature, idx) => (
+                                    <div key={idx} className="flex items-start gap-3 p-3 rounded-xl bg-muted/30 border border-border/50">
+                                        <CheckCircle2 className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
+                                        <span className="text-sm text-foreground">{feature}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
+                    )}
 
-                        {/* Trust Indicators - Horizontal */}
-                        <div className="grid grid-cols-3 gap-3 border-y border-border py-4">
-                            <div className="text-center space-y-1">
-                                <Clock className="w-5 h-5 text-blue-500 mx-auto" />
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Delivery</p>
-                                <p className="text-sm font-bold">Instant</p>
-                            </div>
-                            <div className="text-center space-y-1 border-x border-border">
-                                <Trophy className="w-5 h-5 text-blue-500 mx-auto" />
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Guarantee</p>
-                                <p className="text-sm font-bold">24h Replace</p>
-                            </div>
-                            <div className="text-center space-y-1">
-                                <ShoppingCart className="w-5 h-5 text-blue-500 mx-auto" />
-                                <p className="text-[10px] font-bold text-muted-foreground uppercase">Stock</p>
-                                <p className="text-sm font-bold">{product.stock} Units</p>
+                    {/* Trust Indicators */}
+                    <div className="grid grid-cols-3 gap-3 border-y border-border py-4">
+                        <div className="text-center space-y-1">
+                            <Clock className="w-5 h-5 text-blue-500 mx-auto" />
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Delivery</p>
+                            <p className="text-sm font-bold">Instant</p>
+                        </div>
+                        <div className="text-center space-y-1 border-x border-border">
+                            <Trophy className="w-5 h-5 text-blue-500 mx-auto" />
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Guarantee</p>
+                            <p className="text-sm font-bold">24h Replace</p>
+                        </div>
+                        <div className="text-center space-y-1">
+                            <ShoppingCart className="w-5 h-5 text-blue-500 mx-auto" />
+                            <p className="text-[10px] font-bold text-muted-foreground uppercase">Stock</p>
+                            <p className="text-sm font-bold">{product.stock}</p>
+                        </div>
+                    </div>
+
+                    {/* Price & Actions */}
+                    <div className="space-y-4">
+                        <div className="flex items-end justify-between">
+                            <div className="space-y-1">
+                                <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Price</p>
+                                <p className="text-3xl font-mono font-bold text-foreground">
+                                    ${product.price.toLocaleString()}
+                                </p>
                             </div>
                         </div>
 
-                        {/* Price & Actions */}
-                        <div className="space-y-4">
-                            <div className="flex items-end justify-between">
-                                <div className="space-y-1">
-                                    <p className="text-xs font-bold text-muted-foreground uppercase tracking-wider">Price</p>
-                                    <p className="text-3xl font-mono font-bold text-foreground">
-                                        ${product.price.toLocaleString()}
-                                    </p>
-                                </div>
-                                <div className="flex items-center gap-1 px-3 py-1 bg-amber-500/10 rounded-lg">
-                                    <Star className="w-4 h-4 fill-amber-500 text-amber-500" />
-                                    <span className="text-sm font-bold">4.9</span>
-                                </div>
-                            </div>
-
-                            {/* Action Buttons */}
-                            <div className="space-y-3">
-                                <button
-                                    onClick={handleAddToCart}
-                                    className="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-xl shadow-blue-600/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 active:scale-95"
-                                >
-                                    <ShoppingCart className="w-5 h-5" />
-                                    Add to Cart
-                                </button>
-                                
-                                <button
-                                    onClick={handleContactSupport}
-                                    className="w-full px-6 py-3 bg-muted text-foreground font-bold rounded-xl hover:bg-muted/80 border border-border/50 transition-all active:scale-95 flex items-center justify-center gap-2"
-                                >
-                                    <MessageCircle className="w-4 h-4" />
-                                    Contact Support
-                                </button>
-                            </div>
-
-                            <p className="text-[10px] text-center text-muted-foreground font-medium uppercase tracking-tighter">
-                                By purchasing, you agree to our Terms of Service & Privacy Policy
-                            </p>
+                        {/* Action Buttons */}
+                        <div className="space-y-3">
+                            <button
+                                onClick={handleAddToCart}
+                                className="w-full px-6 py-4 bg-blue-600 text-white font-bold rounded-xl hover:bg-blue-700 shadow-xl shadow-blue-600/20 hover:-translate-y-0.5 transition-all flex items-center justify-center gap-3 active:scale-95"
+                            >
+                                <ShoppingCart className="w-5 h-5" />
+                                Add to Cart
+                            </button>
+                            
+                            <button
+                                onClick={() => setShowContactSupport(true)}
+                                className="w-full px-6 py-3 bg-muted text-foreground font-bold rounded-xl hover:bg-muted/80 border border-border/50 transition-all active:scale-95 flex items-center justify-center gap-2"
+                            >
+                                <MessageCircle className="w-4 h-4" />
+                                Contact Support
+                            </button>
                         </div>
+
+                        <p className="text-[10px] text-center text-muted-foreground font-medium uppercase tracking-tighter">
+                            By purchasing, you agree to our Terms of Service & Privacy Policy
+                        </p>
                     </div>
                 </div>
 
@@ -197,12 +242,12 @@ export function ProductDetailModal({ product, isOpen, onClose }: ProductDetailMo
                             </div>
                             
                             <p className="text-sm text-muted-foreground mb-4">
-                                Have questions about <span className="font-semibold text-foreground">{product.title}</span>? Our support team is here to help.
+                                Have questions about <span className="font-semibold text-foreground">{product.title}</span>?
                             </p>
 
                             <div className="space-y-3">
                                 <a
-                                    href="mailto:support@cashvault.com?subject=Question about ${encodeURIComponent(product.title)}"
+                                    href={`mailto:support@cashvault.com?subject=Question about ${encodeURIComponent(product.title)}`}
                                     className="flex items-center gap-3 p-3 bg-muted rounded-xl hover:bg-muted/80 transition-colors"
                                 >
                                     <div className="w-10 h-10 bg-blue-500/10 rounded-lg flex items-center justify-center">

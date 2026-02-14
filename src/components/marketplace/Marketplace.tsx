@@ -9,6 +9,7 @@ import { ProductCard } from './ProductCard'
 import { TopUpModal } from './TopUpModal'
 import { AddFundsModal } from './AddFundsModal'
 import { RecentSales } from './RecentSales'
+import { LiveChat } from './LiveChat'
 import { CartView } from './CartView'
 import { MyPurchasesView } from './MyPurchasesView'
 import { ProfileView } from './ProfileView'
@@ -18,7 +19,7 @@ import { WelcomeModal } from './WelcomeModal'
 import { PRODUCTS as INITIAL_PRODUCTS, CATEGORIES, Product, BANNER_IMAGE } from '@/lib/data'
 import { useUser } from "@stackframe/stack";
 import { Search, ShieldCheck, Users, Clock, TrendingUp, ChevronRight, Wallet } from 'lucide-react'
-import { ProductVariantModal } from './ProductVariantModal'
+import { ProductDetailModal } from './ProductDetailModal'
 import { SettingsView } from './SettingsView'
 import { SecurityView } from './SecurityView'
 import { useUserStore } from '@/stores/user-store'
@@ -416,12 +417,13 @@ export function Marketplace() {
 
         <TopUpModal isOpen={isTopUpOpen} onClose={() => setIsTopUpOpen(false)} />
         <AddFundsModal isOpen={isAddFundsOpen} onClose={() => setIsAddFundsOpen(false)} />
-        <ProductVariantModal
+        <ProductDetailModal
           product={selectedProduct}
           isOpen={!!selectedProduct}
           onClose={() => setSelectedProduct(null)}
         />
         <RecentSales />
+        <LiveChat />
       </div>
     </VaultPreloader>
   )
